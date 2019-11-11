@@ -15,9 +15,9 @@ def create_app(config_name):
 
     db.init_app(app)
 
-    from .models import User
+    from .models import City
 
-    # from .auth import auth as auth_blueprint
-    # app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    from app.CRUD.city.views import city_blueprint
+    app.register_blueprint(city_blueprint, url_prefix='/city')
 
     return app

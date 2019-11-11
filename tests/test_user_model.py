@@ -1,5 +1,3 @@
-# Password hashing tests
-
 
 from app.models import User
 import unittest
