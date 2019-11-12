@@ -7,79 +7,67 @@
     <div class="page-header row no-gutters py-4 mb-3 border-bottom">
         <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
             <span class="text-uppercase page-subtitle">Overview</span>
-            <h3 class="page-title">Create adwdawda</h3>
+            <h3 class="page-title">Show addresses</h3>
         </div>
+
     </div>
     <!-- End Page Header -->
 
     <div class="row">
-        <div class="col-lg-8 mb-4">
+        <div class="col">
+            <button type="button" onclick="location.href='/address/create';"
+                class="mb-2 btn btn-primary mr-2">Create</button>
+
             <div class="card card-small mb-4">
 
-                <ul class="list-group list-group-flush">
+                <div class="card-body p-0 pb-3 text-center">
 
-                    <li class="list-group-item p-3">
 
-                    </li>
-                    <li class="list-group-item p-3">
-                        <div class="row">
-                            <div class="col-sm-12 col-md-12">
-                                <form action="/address/create" method="POST">
-                                    <div class="form-group">
-                                        <strong class="text-muted d-block mb-2">City</strong>
-                                        <div class="input-group mb-3">
-                                            <select class="form-control" onchange="test(this)" name="select-city">
-                                                {% for city in list_city %}
-                                                <option {% if loop.first %} SELECTED{% endif %} value="{{ city.id }}">
-                                                    {{ city.name }}</option>
-                                                {% endfor %}
+                    <table class="table mb-0" id="table-posts">
+                        <thead class="bg-light">
+                            <tr>
+                                <th scope="col" class="border-0">Id</th>
+                                <th scope="col" class="border-0">Address</th>
+                                <th scope="col" class="border-0">District</th>
+                                <th scope="col" class="border-0">City</th>
+                                <th scope="col" class="border-0">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-tbody-posts">
+                            {% for address in addresses %}
+                            <tr>
+                                <td>{{ address.id }}</td>
+                                <td>{{ address.detail }}</td>
+                                <td>{{ address.district }}</td>
+                                <td>{{ address.city }}</td>
+                                <td>
+                                    <a href="/admin/comments/{{ address.id }}"
+                                        class="mb-2 btn btn-sm btn-danger mr-1">Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <strong class="text-muted d-block mb-2">District</strong>
-                                        <div class="input-group mb-3">
-                                            <select disabled class="form-control" id="select-district"
-                                                name="select-district">
-                                                <!-- {% for district in list_district %}
-                                                <option>{{ district }}</option>
-                                                {% endfor %} -->
-                                            </select>
-                                        </div>
-
-                                    </div>
-                                    <div class="form-group">
-                                        <strong class="text-muted d-block mb-2">Address</strong>
-                                        <div class="input-group mb-3">
-                                            <input type="text" class="form-control" placeholder="Content"
-                                                aria-label="Content" aria-describedby="basic-addon1" name="content"
-                                                value="">
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <button type="submit" class="mb-2 btn btn-primary mr-2 w-100">Create</button>
-                                    </div>
-                                    {% with messages = get_flashed_messages(with_categories=true) %}
-                                    {% if message %}
-                                    <p style="color: red;">message</p>
-                                    {% endif %}
-                                    {% endwith %}
-                                </form>
-                            </div>
-
-                        </div>
-                    </li>
-                </ul>
+                </div>
             </div>
-        </div>
-        <div class="col-lg-4 mb-4">
+            <ul id="pagination-demo" class="pagination-md float-right"></ul>
 
         </div>
+
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='address/address.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
+<script src="{{ url_for('static', filename='address/show_address.js') }}"></script>
 
+<script>
+
+    $('#pagination-demo').twbsPagination({
+        totalPages: {{ total_pages }},
+        visiblePages: 4,
+        href: true,
+        defaultHref: '?page=',
+    });
+</script>
 {% endblock %}

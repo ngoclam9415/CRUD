@@ -39,7 +39,21 @@ def get_district_by_city():
     return jsonify(jsonable_district)
 
 
-@address_blueprint.route('/list', methods=['GET'])
+@address_blueprint.route('/show', methods=['GET'])
 def show_addresses():
 
     return render_template('CRUD/address/show-address.html')
+
+
+@address_blueprint.route('/list', methods=['GET'])
+def list_addresses():
+    page = request.args.get("page", 1, type=int)
+    # test = Address.query.filter_by().first()
+    addresses_pagination = db.session.query(City.name.label("city"), Address.id, Address.detail, District.name.label("district")).filter(
+        City.id == District.city_id).filter(Address.district_id == District.id).paginate(page=page, per_page=10, error_out=False)
+
+    addresses = addresses_pagination.items
+    total_page = addresses_pagination.pages
+    current_page = addresses_pagination.page
+
+    return render_template('CRUD/address/show-address.html', addresses=addresses, total_page=total_page, current_page=current_page)

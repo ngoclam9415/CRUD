@@ -25,7 +25,7 @@ class District(db.Model):
     name = db.Column(db.String(50))
 
     address = db.relationship(
-        "Address", backref='district-address', lazy="dynamic")
+        "Address", backref='district', lazy="dynamic")
 
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
 
