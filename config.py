@@ -29,7 +29,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     # SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
     #                           'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
-    SQLALCHEMY_DATABASE_URI = "mysql+mysqldb://root@localhost:3306/shoppingtemp?charset=utf8mb4"
+    SQLALCHEMY_DATABASE_URI = "mysql+mysqldb://root:Admin123@localhost:3306/shoppingtemp?charset=utf8mb4"
 
     @classmethod
     def init_app(cls, app):
@@ -39,7 +39,7 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-                              'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
+        'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
 
     @classmethod
     def init_app(cls, app):

@@ -20,4 +20,7 @@ def create_app(config_name):
     from app.CRUD.city.views import city_blueprint
     app.register_blueprint(city_blueprint, url_prefix='/city')
 
+    from app.CRUD.address.views import address_blueprint
+    app.register_blueprint(address_blueprint, url_prefix='/address')
+
     return app
