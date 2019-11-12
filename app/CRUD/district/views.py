@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app, request, jsonify
+from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for
 from app.models import *
 from app import db
 from app.utils import page_number_caculater
@@ -13,24 +13,24 @@ def district():
     page = request.args.get("page", 1, type=int)
     cities = City.query.all()
     results = District.query.paginate(page, per_page, error_out=False)
-    infos = [{"id": result.id, "name": result.name, "city": result.city.name}
-             for result in results.items]
-    return render_template('CRUD/district/district.html', infos=infos, district_active="active", cities=cities, pages=results.pages)
+    # infos = [{"id": result.id, "name": result.name, "city": result.city.name}
+    #          for result in results.items]
+    return render_template('CRUD/district/district.html', infos=results.items, district_active="active", cities=cities, pages=results.pages)
 
 
 @district_blueprint.route('/api/create', methods=['POST'])
 def create_district():
-    data = request.get_json()
+    # print(request.values)
+    data = request.values
     district_name = data.get("district_name", None)
-    city_name = data.get("city_name", None)
-    if district_name is None or city_name is None:
+    city_id = data.get("city_id", None)
+    if district_name is None or city_id is None:
         return jsonify({"sucess": False, "data": None})
-    city = City.query.filter(City.name == city_name).first()
-    district = District(name=district_name, city=city)
+    district = District(name=district_name, city_id=city_id)
     db.session.add(district)
     db.session.commit()
-    data = {"id": district.id, "name": district.name, "city": city_name}
-    return jsonify({"sucess": True, "data": data})
+    data = {"id": district.id, "name": district.name, "city": district.city.name}
+    return redirect(url_for("district.district"))
 
 
 @district_blueprint.route('/api/edit', methods=['POST'])
@@ -38,18 +38,18 @@ def edit_district():
     data = request.get_json()
     district_id = data.get("district_id", None)
     district_name = data.get("district_name", None)
-    city_name = data.get("city_name", None)
-    if district_name is None or city_name is None or district_id is None:
+    city_id = data.get("city_id", None)
+    if district_name is None or city_id is None or district_id is None:
         return jsonify({"sucess": False, "data": None})
     district = District.query.filter(District.id == district_id).first()
     district.name = district_name
-    district.city.name = city_name
-    # district.city = city
+    district.city_id = city_id
     db.session.commit()
-    data = {"id": district.id, "name": district.name, "city": city_name}
+    data = {"id": district.id, "name": district.name, "city": city_id}
     return jsonify({"sucess": True, "data": data})
 
 
-@district_blueprint.route("/test")
+@district_blueprint.route("/create")
 def test():
-    return render_template("CRUD/district/create.html")
+    cities = City.query.all()
+    return render_template("CRUD/district/create.html", cities=cities)
