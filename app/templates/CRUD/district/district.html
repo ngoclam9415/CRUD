@@ -40,7 +40,7 @@
                                 {% for info in infos %}
                                 <tr>
                                     <td>{{ info.id }}</td>
-                                    <td>{{ info.city }}</td>
+                                    <td value="{{ info.city.id }}">{{ info.city.name }}</td>
                                     <td>{{ info.name }}</td>
                                     <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">EDIT</button></td>
                                 </tr>
@@ -80,7 +80,7 @@
                             <label for="city_edit" class="col-sm-2" style="padding-left: 0">City</label>
                             <select class="form-control form-control-lg" id="city_edit">
                                         {% for city in cities %}
-                                        <option>{{city.name}}</option>
+                                        <option value="{{city.id}}">{{city.name}}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
