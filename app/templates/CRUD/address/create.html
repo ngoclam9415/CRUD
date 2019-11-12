@@ -29,10 +29,10 @@
                                         <strong class="text-muted d-block mb-2">City</strong>
                                         <div class="input-group mb-3">
                                             <select class="form-control">
-                                                <option selected="">Choose...</option>
-                                                <option>Ho Chi Minh</option>
-                                                <option>Ho Chi Minh</option>
-                                                <option>Ho Chi Minh</option>
+                                                {% for city in list_city %}
+                                                <option{% if loop.first %} SELECTED{% endif %}>{{ city }}</option>
+                                                    {% endfor %}
+
                                             </select>
                                         </div>
                                     </div>
@@ -40,10 +40,9 @@
                                         <strong class="text-muted d-block mb-2">District</strong>
                                         <div class="input-group mb-3">
                                             <select class="form-control">
-                                                <option selected="">Choose...</option>
-                                                <option>Ho Chi Minh</option>
-                                                <option>Ho Chi Minh</option>
-                                                <option>Ho Chi Minh</option>
+                                                {% for district in list_district %}
+                                                <option>{{ district }}</option>
+                                                {% endfor %}
                                             </select>
                                         </div>
 
@@ -74,5 +73,6 @@
     </div>
 </div>
 
+<script src="{{ url_for('static', filename='address/address.js') }}"></script>
 
 {% endblock %}
