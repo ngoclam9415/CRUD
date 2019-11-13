@@ -1,6 +1,7 @@
 from app import db, create_app
 
 
+
 class City(db.Model):
     __tablename__ = 'city'
     __table_args__ = {'extend_existing': True}

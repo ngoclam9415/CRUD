@@ -56,4 +56,6 @@ def list_addresses():
     total_page = addresses_pagination.pages
     current_page = addresses_pagination.page
 
+    print(total_page)
+
     return render_template('CRUD/address/show-address.html', addresses=addresses, total_page=total_page, current_page=current_page)

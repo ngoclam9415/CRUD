@@ -62,9 +62,8 @@
 <script src="{{ url_for('static', filename='address/show_address.js') }}"></script>
 
 <script>
-
     $('#pagination-demo').twbsPagination({
-        totalPages: {{ total_pages }},
+        totalPages: {{ total_page }},
         visiblePages: 4,
         href: true,
         defaultHref: '?page=',
