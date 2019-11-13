@@ -94,7 +94,7 @@
             visiblePages: 2,
             onPageClick: function (event, page) {
                 $('#page-content').text('Page ' + page);
-                $.ajax('http://127.0.0.1:5000/city/api/list?page=' + page,
+                $.ajax('/city/api/list?page=' + page,
                     {
                         dataType: 'json',
                         success: function (data) {
