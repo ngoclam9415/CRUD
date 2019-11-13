@@ -9,20 +9,14 @@
     <div class="page-header row no-gutters py-4">
         <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
             <span class="text-uppercase page-subtitle">Overview</span>
-            <h3 class="page-title">District Table</h3>
+            <h3 class="page-title">Color Table</h3>
         </div>
     </div>
     <div class="col-12 text-right justify-content-end">
-        <a href={{ url_for("district.test") }} class="btn btn-lg btn-accent ml-auto" id="create">
-            <i class="material-icons">add</i>Add new district
+        <a href={{ url_for("color.create") }} class="btn btn-lg btn-accent ml-auto" id="create">
+            <i class="material-icons">add</i>Add new color
         </a>
     </div>
-    
-    
-    <!-- Form va table o cho nay -->
-    <!-- <div class="container">
-        <a href={{ url_for("district.test") }} id="create" class="btn btn-primary btn-lg">Create</a>
-    </div> -->
     <br>
     <br>
     <!-- End Page Header -->
@@ -36,17 +30,15 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th scope="col" class="border-0">Id</th>
-                                    <th scope="col" class="border-0">City</th>
-                                    <th scope="col" class="border-0">Name</th>
+                                    <th scope="col" class="border-0">Color Name</th>
                                     <th scope="col" class="border-0">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="body-cmt">
-                                {% for info in infos %}
+                                {% for color in colors %}
                                 <tr>
-                                    <td>{{ info.id }}</td>
-                                    <td value="{{ info.city.id }}">{{ info.city.name }}</td>
-                                    <td>{{ info.name }}</td>
+                                    <td>{{ color.id }}</td>
+                                    <td>{{ color.value }}</td>
                                     <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">EDIT</button></td>
                                 </tr>
                                 {% endfor %}
@@ -66,7 +58,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modify district</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Modify Color</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -74,45 +66,36 @@
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="id_edit" class="col-sm-2" style="padding-left: 0">District Id</label>
-                            <input type="text" class="form-control form-control-lg" id="id_edit" disabled>
+                            <label for="id_edit" class="col-sm-2" style="padding-left: 0">Color Id</label>
+                            <input type="text" class="form-control form-control-lg" id="id_edit" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="district_edit" class="col-sm-2" style="padding-left: 0">District</label>
-                            <input type="text" class="form-control form-control-lg" id="district_edit" placeholder="Quan 2">
-                        </div>
-                        <div class="form-group">
-                            <label for="city_edit" class="col-sm-2" style="padding-left: 0">City</label>
-                            <select class="form-control form-control-lg" id="city_edit">
-                                        {% for city in cities %}
-                                        <option value="{{city.id}}">{{city.name}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                
-                            </form>
+                            <label for="value_edit" class="col-sm-2" style="padding-left: 0">Color Name</label>
+                            <input type="text" class="form-control form-control-lg" id="value_edit" placeholder="Red">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">Close</button>
                             <button type="submit" id="modify" class="btn btn-primary btn-lg">Modify</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
+        </div>
+    </div>
             <!-- END MODAL -->
-            
-            
+        
             <div class="container">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-end" id="pagination"></ul>
-                </nav>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-end" id="pagination"></ul>
+                    </nav>
             </div>
+            
             
             
             {% endblock %}
             
             {% block addition %}
-            <script src="{{ url_for('static', filename='district/district.js') }}"></script>
+            <script src="{{ url_for('static', filename='color/color.js') }}"></script>
             <script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
             <script>
                 $('#pagination').twbsPagination({
