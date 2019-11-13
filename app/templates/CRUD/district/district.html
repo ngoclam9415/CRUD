@@ -17,8 +17,8 @@
             <i class="material-icons">add</i>Add new district
         </a>
     </div>
-    
-    
+
+
     <!-- Form va table o cho nay -->
     <!-- <div class="container">
         <a href={{ url_for("district.test") }} id="create" class="btn btn-primary btn-lg">Create</a>
@@ -47,22 +47,24 @@
                                     <td>{{ info.id }}</td>
                                     <td value="{{ info.city.id }}">{{ info.city.name }}</td>
                                     <td>{{ info.name }}</td>
-                                    <td><button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">EDIT</button></td>
+                                    <td><button type="button" class="btn btn-info" data-toggle="modal"
+                                            data-target="#exampleModal">EDIT</button></td>
                                 </tr>
                                 {% endfor %}
                                 <!-- <input style="display: none;" name="totalPages" id="totalPages" value="{{ total_pages }}"></input> -->
                             </tbody>
                         </table>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
     </div>
     <!-- HET ROI -->
-    
+
     <!-- POP UP MODAL -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -79,49 +81,57 @@
                         </div>
                         <div class="form-group">
                             <label for="district_edit" class="col-sm-2" style="padding-left: 0">District</label>
-                            <input type="text" class="form-control form-control-lg" id="district_edit" placeholder="Quan 2">
+                            <input type="text" class="form-control form-control-lg" id="district_edit"
+                                placeholder="Quan 2">
                         </div>
                         <div class="form-group">
                             <label for="city_edit" class="col-sm-2" style="padding-left: 0">City</label>
                             <select class="form-control form-control-lg" id="city_edit">
-                                        {% for city in cities %}
-                                        <option value="{{city.id}}">{{city.name}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                
-                            </form>
+                                {% for city in cities %}
+                                <option value="{{city.id}}">{{city.name}}</option>
+                                {% endfor %}
+                            </select>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">Close</button>
-                            <button type="submit" id="modify" class="btn btn-primary btn-lg">Modify</button>
-                        </div>
-                    </div>
+
+                    </form>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">Close</button>
+                    <button type="submit" id="modify" class="btn btn-primary btn-lg">Modify</button>
+                </div>
+
+                </form>
             </div>
-            <!-- END MODAL -->
-            
-            
-            <div class="container">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-end" id="pagination"></ul>
-                </nav>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">Close</button>
+                <button type="submit" id="modify" class="btn btn-primary btn-lg">Modify</button>
             </div>
-            
-            
-            {% endblock %}
-            
-            {% block addition %}
-            <script src="{{ url_for('static', filename='district/district.js') }}"></script>
-            <script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
-            <script>
-                $('#pagination').twbsPagination({
-                    startPage: 1,
-                    totalPages: {{pages}},
-                    pageVariable: 'page',
-                    visiblePages: 5,
-                    href: true,
-                    defaultHref: '?page=',
+        </div>
+    </div>
+</div>
+<!-- END MODAL -->
+
+
+<div class="container">
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-end" id="pagination"></ul>
+    </nav>
+</div>
+
+
+{% endblock %}
+
+{% block addition %}
+<script src="{{ url_for('static', filename='district/district.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
+<script>
+    $('#pagination').twbsPagination({
+        startPage: 1,
+        totalPages: {{ pages }},
+        pageVariable: 'page',
+        visiblePages: 5,
+        href: true,
+        defaultHref: '?page=',
                 });
-                </script>
+</script>
 {% endblock %}

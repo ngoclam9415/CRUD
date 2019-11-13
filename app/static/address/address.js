@@ -1,4 +1,4 @@
-var test = (e) => {
+var getDistrictByCity = (e) => {
 
     var cityId = e.options[e.selectedIndex].value;
 

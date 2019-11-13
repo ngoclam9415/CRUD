@@ -38,11 +38,11 @@
                             <tr>
                                 <td>{{ address.id }}</td>
                                 <td>{{ address.detail }}</td>
-                                <td>{{ address.district }}</td>
-                                <td>{{ address.city }}</td>
+                                <td data-district-id="{{ address.district_id }}">{{ address.district }}</td>
+                                <td data-city-id="{{ address.city_id }}">{{ address.city }}</td>
                                 <td>
-                                    <a href="/admin/comments/{{ address.id }}"
-                                        class="mb-2 btn btn-sm btn-danger mr-1">Edit</a>
+                                    <button data-toggle="modal" data-target="#exampleModal"
+                                        class="mb-2 btn btn-sm btn-primary mr-1">Edit</button>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -51,20 +51,70 @@
 
                 </div>
             </div>
-            <ul id="pagination-demo" class="pagination-md float-right"></ul>
+            <ul id="pagination" class="pagination-md float-right"></ul>
 
         </div>
 
     </div>
+
+    <!-- POP UP MODAL -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modify address</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="id_edit" class="col-sm-2" style="padding-left: 0">AddressID</label>
+                            <input type="text" class="form-control form-control-lg" id="id_edit" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="city_edit" class="col-sm-2" style="padding-left: 0">City</label>
+                            <select class="form-control form-control-lg" id="city_edit" onchange="getDistrictByCity()">
+                                {% for city in list_city %}
+                                <option value="{{ city.id }}">{{city.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="district_edit" class="col-sm-2" style="padding-left: 0">District</label>
+                            <select class="form-control form-control-lg" id="district_edit">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="address-edit" class="col-sm-2" style="padding-left: 0">Detail</label>
+                            <input type="text" class="form-control form-control-lg" id="address-edit"
+                                placeholder="address detail">
+                        </div>
+
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+                    <button type="submit" id="modify" class="btn btn-primary btn-sm">Modify</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- END MODAL -->
 </div>
 
 <script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
 <script src="{{ url_for('static', filename='address/show_address.js') }}"></script>
 
 <script>
-    $('#pagination-demo').twbsPagination({
+    $('#pagination').twbsPagination({
+        startPage: 1,
         totalPages: {{ total_page }},
-        visiblePages: 4,
+        pageVariable: 'page',
+        visiblePages: 5,
         href: true,
         defaultHref: '?page=',
     });

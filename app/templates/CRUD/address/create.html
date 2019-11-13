@@ -28,7 +28,8 @@
                                     <div class="form-group">
                                         <strong class="text-muted d-block mb-2">City</strong>
                                         <div class="input-group mb-3">
-                                            <select class="form-control" onchange="test(this)" name="select-city">
+                                            <select class="form-control" onchange="getDistrictByCity(this)"
+                                                name="select-city">
                                                 <option selected>...</option>
                                                 {% for city in list_city %}
                                                 <option value="{{ city.id }}">

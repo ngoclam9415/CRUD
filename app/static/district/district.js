@@ -1,11 +1,11 @@
 var create_district = window.location.origin + "/district/api/create";
 var edit_district = window.location.origin + "/district/api/edit";
 
-$("#exampleModal").on("shown.bs.modal", function() {
+$("#exampleModal").on("shown.bs.modal", function () {
   console.log("POP UP");
 });
 
-$("#modify").on("click", function(event) {
+$("#modify").on("click", function (event) {
   event.preventDefault();
   var district_name = $("#district_edit").val();
   var city_id = $("#city_edit").val();
@@ -20,7 +20,7 @@ $("#modify").on("click", function(event) {
   });
 });
 
-$(".btn.btn-info").on("click", function() {
+$(".btn.btn-primary").on("click", function () {
   var this_row = $(this).closest("tr");
   console.log(this_row);
   var district_id = this_row

@@ -19,7 +19,7 @@ def create_address():
 
         db.session.add(new_address)
         db.session.commit()
-        return redirect(url_for('address.show_addresses'))
+        return redirect(url_for('address.list_addresses'))
 
     list_city = [city for city in City.query.all()]
 
@@ -39,23 +39,38 @@ def get_district_by_city():
     return jsonify(jsonable_district)
 
 
-@address_blueprint.route('/show', methods=['GET'])
-def show_addresses():
-
-    return render_template('CRUD/address/show-address.html')
-
-
-@address_blueprint.route('/list', methods=['GET'])
+@address_blueprint.route('/', methods=['GET'])
 def list_addresses():
     page = request.args.get("page", 1, type=int)
-    # test = Address.query.filter_by().first()
-    addresses_pagination = db.session.query(City.name.label("city"), Address.id, Address.detail, District.name.label("district")).filter(
-        City.id == District.city_id).filter(Address.district_id == District.id).paginate(page=page, per_page=10, error_out=False)
 
-    addresses = addresses_pagination.items
+    addresses_pagination = Address.query.order_by(
+        Address.id).paginate(page=page, per_page=10, error_out=False)
+
     total_page = addresses_pagination.pages
     current_page = addresses_pagination.page
 
-    print(total_page)
+    addresses = [{'city': address.district.city.name, 'city_id': address.district.city.id,
+                  'district': address.district.name, 'district_id': address.district.id,
+                  'detail': address.detail, 'id': address.id}
+                 for address in addresses_pagination.items]
 
-    return render_template('CRUD/address/show-address.html', addresses=addresses, total_page=total_page, current_page=current_page)
+    list_city = [city for city in City.query.all()]
+
+    return render_template('CRUD/address/show-address.html', addresses=addresses, total_page=total_page, current_page=current_page, list_city=list_city)
+
+
+@address_blueprint.route('/edit', methods=['POST'])
+def edit_address():
+    new_address_info = request.get_json()
+
+    db.session.query(Address).filter(
+        Address.id == new_address_info.get('address_id', None)).update(
+            {
+                "district_id": new_address_info.get('district_id'),
+                "detail": new_address_info.get('address_detail'),
+            }
+    )
+
+    db.session.commit()
+
+    return jsonify({"status": "ok"})
