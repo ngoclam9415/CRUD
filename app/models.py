@@ -66,7 +66,8 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50))
     brand_id = db.Column(db.Integer, db.ForeignKey('brand.id'))
-
+    product = db.relationship(
+        "Product", backref='category', lazy="dynamic")
 
 class Store(db.Model):
     __tablename__ = "store"
@@ -75,3 +76,12 @@ class Store(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
     store_name = db.Column(db.String(50))
+
+
+class Product(db.Model):
+    __tablename__ = "product"
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50))
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
