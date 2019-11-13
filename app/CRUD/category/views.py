@@ -49,7 +49,7 @@ def create_category(error=None):
             return redirect('/category')
         else:
             error = "Your category is error"
-    return render_template('CRUD/category/create.html', brands=brands, error=error)
+    return render_template('CRUD/category/create.html', brands=brands, error=error, category_active="active")
 
 
 @category_blueprint.route('/edit', methods=['POST'])

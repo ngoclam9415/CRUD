@@ -13,14 +13,11 @@ def district():
     page = request.args.get("page", 1, type=int)
     cities = City.query.all()
     results = District.query.paginate(page, per_page, error_out=False)
-    # infos = [{"id": result.id, "name": result.name, "city": result.city.name}
-    #          for result in results.items]
     return render_template('CRUD/district/district.html', infos=results.items, district_active="active", cities=cities, pages=results.pages)
 
 
 @district_blueprint.route('/api/create', methods=['POST'])
 def create_district():
-    # print(request.values)
     data = request.values
     district_name = data.get("district_name", None)
     city_id = data.get("city_id", None)
@@ -29,8 +26,6 @@ def create_district():
     district = District(name=district_name, city_id=city_id)
     db.session.add(district)
     db.session.commit()
-    data = {"id": district.id, "name": district.name,
-            "city": district.city.name}
     return redirect(url_for("district.district"))
 
 
@@ -53,4 +48,4 @@ def edit_district():
 @district_blueprint.route("/create")
 def test():
     cities = City.query.all()
-    return render_template("CRUD/district/create.html", cities=cities)
+    return render_template("CRUD/district/create.html", cities=cities, district_active="active")

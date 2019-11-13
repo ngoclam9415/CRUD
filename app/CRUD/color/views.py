@@ -44,4 +44,4 @@ def edit_district():
 
 @color_blueprint.route("/create")
 def create():
-    return render_template("CRUD/color/create.html")
+    return render_template("CRUD/color/create.html", color_active="active")

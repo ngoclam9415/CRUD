@@ -45,7 +45,7 @@ def create_city(error=None):
             return redirect('/city')
         else:
             error = "Your city is error"
-    return render_template('CRUD/city/create.html', error=error)
+    return render_template('CRUD/city/create.html', error=error, city_active="active")
 
 
 @city_blueprint.route('/edit', methods=['POST'])

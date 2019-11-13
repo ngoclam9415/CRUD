@@ -49,7 +49,7 @@ def create_product(error=None):
             return redirect('/product')
         else:
             error = "Your product is error"
-    return render_template('CRUD/product/create.html', categories=categories, error=error)
+    return render_template('CRUD/product/create.html', categories=categories, error=error, product_active="active")
 
 
 @product_blueprint.route('/edit', methods=['POST'])

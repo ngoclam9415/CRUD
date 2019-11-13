@@ -23,7 +23,7 @@ def create_address():
 
     list_city = [city for city in City.query.all()]
 
-    return render_template('CRUD/address/create.html', list_city=list_city)
+    return render_template('CRUD/address/create.html', list_city=list_city, address_active="active")
 
 
 @address_blueprint.route('/district', methods=['GET'])
@@ -56,7 +56,7 @@ def list_addresses():
 
     list_city = [city for city in City.query.all()]
 
-    return render_template('CRUD/address/show-address.html', addresses=addresses, total_page=total_page, current_page=current_page, list_city=list_city)
+    return render_template('CRUD/address/show-address.html', addresses=addresses, total_page=total_page, current_page=current_page, list_city=list_city, address_active="active")
 
 
 @address_blueprint.route('/edit', methods=['POST'])

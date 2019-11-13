@@ -45,7 +45,7 @@ def create_brand(error=None):
             return redirect('/brand')
         else:
             error = "Your brand is error"
-    return render_template('CRUD/brand/create.html', error=error)
+    return render_template('CRUD/brand/create.html', error=error, brand_active="active")
 
 
 @brand_blueprint.route('/edit', methods=['POST'])

@@ -18,7 +18,6 @@ def index():
 
 @store_blueprint.route('/api/create', methods=['POST'])
 def api_create():
-    # print(request.values)
     data = request.values
     store_name = data.get("store_name", None)
     address_id = data.get("address_id", None)
@@ -38,7 +37,7 @@ def api_edit():
     address_id = data.get("address_id", None)
     if name is None or address_id is None or id is None:
         return jsonify({"sucess": False, "data": None})
-    store = Store.query.filter(store.id == id).first()
+    store = Store.query.filter(Store.id == id).first()
     store.name = name
     store.address_id = address_id
     db.session.commit()
@@ -50,4 +49,4 @@ def api_edit():
 @store_blueprint.route("/create")
 def create():
     addresses = Address.query.all()
-    return render_template("CRUD/store/create.html", addresses=addresses)
+    return render_template("CRUD/store/create.html", addresses=addresses, store_active="active")
