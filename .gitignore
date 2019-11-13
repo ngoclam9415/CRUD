@@ -203,3 +203,4 @@ Temporary Items
 venv/
 ./config.py
 .vscode
+config.py
