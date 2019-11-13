@@ -204,3 +204,4 @@ venv/
 ./config.py
 .vscode
 config.py
+dependencies/*
