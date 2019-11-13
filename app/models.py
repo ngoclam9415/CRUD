@@ -1,7 +1,6 @@
 from app import db, create_app
 
 
-
 class City(db.Model):
     __tablename__ = 'city'
     __table_args__ = {'extend_existing': True}
@@ -38,6 +37,9 @@ class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     detail = db.Column(db.String(50))
     district_id = db.Column(db.Integer, db.ForeignKey('district.id'))
+    store = db.relationship(
+        "Store", backref='address', lazy="dynamic")
+
 
 class Color(db.Model):
     __tablename__ = "color"
@@ -45,6 +47,7 @@ class Color(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     value = db.Column(db.String(50), unique=True)
+
 
 class Brand(db.Model):
     __tablename__ = "brand"
@@ -55,6 +58,7 @@ class Brand(db.Model):
     category = db.relationship(
         "Category", backref='brand', lazy="dynamic")
 
+
 class Category(db.Model):
     __tablename__ = "category"
     __table_args__ = {'extend_existing': True}
@@ -62,3 +66,12 @@ class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50))
     brand_id = db.Column(db.Integer, db.ForeignKey('brand.id'))
+
+
+class Store(db.Model):
+    __tablename__ = "store"
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
+    store_name = db.Column(db.String(50))
