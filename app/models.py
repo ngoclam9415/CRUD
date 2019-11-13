@@ -38,3 +38,10 @@ class Address(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     detail = db.Column(db.String(50))
     district_id = db.Column(db.Integer, db.ForeignKey('district.id'))
+
+class Color(db.Model):
+    __tablename__ = "color"
+    __table_args__ = {'extend_existing': True}
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    value = db.Column(db.String(50), unique=True)

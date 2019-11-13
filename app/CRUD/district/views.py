@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for
-from app.models import *
+from app.models import City, District
 from app import db
 from app.utils import page_number_caculater
 
@@ -29,7 +29,8 @@ def create_district():
     district = District(name=district_name, city_id=city_id)
     db.session.add(district)
     db.session.commit()
-    data = {"id": district.id, "name": district.name, "city": district.city.name}
+    data = {"id": district.id, "name": district.name,
+            "city": district.city.name}
     return redirect(url_for("district.district"))
 
 
