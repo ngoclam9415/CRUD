@@ -59,8 +59,8 @@
 
     var tagName =
       typeof this.$element.prop === "function" ?
-      this.$element.prop("tagName") :
-      this.$element.attr("tagName");
+        this.$element.prop("tagName") :
+        this.$element.attr("tagName");
 
     if (tagName === "UL") {
       this.$listContainer = this.$element;
@@ -144,10 +144,10 @@
       if (this.options.prev) {
         var prev =
           pages.currentPage > 1 ?
-          pages.currentPage - 1 :
-          this.options.loop ?
-          this.options.totalPages :
-          1;
+            pages.currentPage - 1 :
+            this.options.loop ?
+              this.options.totalPages :
+              1;
         listItems.push(this.buildItem("prev", prev));
       }
 
@@ -158,10 +158,10 @@
       if (this.options.next) {
         var next =
           pages.currentPage < this.options.totalPages ?
-          pages.currentPage + 1 :
-          this.options.loop ?
-          1 :
-          this.options.totalPages;
+            pages.currentPage + 1 :
+            this.options.loop ?
+              1 :
+              this.options.totalPages;
         listItems.push(this.buildItem("next", next));
       }
 
@@ -176,32 +176,32 @@
       var $itemContainer = $("<li></li>"),
         $itemContent = $("<a></a>"),
         itemText = this.options[type] ?
-        this.makeText(this.options[type], page) :
-        page;
+          this.makeText(this.options[type], page) :
+          page;
 
       $itemContainer.addClass(this.options[type + "Class"]);
       $itemContainer.data("page", page);
       $itemContainer.data("page-type", type);
       $itemContainer.append(
         $itemContent
-        .attr("href", this.makeHref(page))
-        .addClass(this.options.anchorClass)
-        .html(itemText)
+          .attr("href", this.makeHref(page))
+          .addClass(this.options.anchorClass)
+          .html(itemText)
       );
 
       if (this.options.defaultHref) {
         $itemContainer.append(
           $itemContent
-          .attr("href", this.options.defaultHref + page)
-          .addClass(this.options.anchorClass)
-          .html(itemText)
+            .attr("href", this.options.defaultHref + page)
+            .addClass(this.options.anchorClass)
+            .html(itemText)
         );
       } else {
         $itemContainer.append(
           $itemContent
-          .attr("href", this.makeHref(page))
-          .addClass(this.options.anchorClass)
-          .html(itemText)
+            .attr("href", this.makeHref(page))
+            .addClass(this.options.anchorClass)
+            .html(itemText)
         );
       }
       return $itemContainer;
