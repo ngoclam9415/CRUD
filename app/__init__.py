@@ -17,12 +17,14 @@ def create_app(config_name):
     from app.CRUD.district.views import district_blueprint
     from app.CRUD.color.views import color_blueprint
     from app.CRUD.category.views import category_blueprint
+    from app.CRUD.store.views import store_blueprint
+    from app.CRUD.address.views import address_blueprint
+
     app.register_blueprint(city_blueprint, url_prefix='/city')
     app.register_blueprint(district_blueprint, url_prefix='/district')
     app.register_blueprint(color_blueprint, url_prefix='/color')
     app.register_blueprint(category_blueprint, url_prefix='/category')
-
-    from app.CRUD.address.views import address_blueprint
+    app.register_blueprint(store_blueprint, url_prefix='/store')
     app.register_blueprint(address_blueprint, url_prefix='/address')
 
     return app
