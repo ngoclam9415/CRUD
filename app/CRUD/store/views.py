@@ -33,16 +33,17 @@ def api_create():
 @store_blueprint.route('/api/edit', methods=['POST'])
 def api_edit():
     data = request.get_json()
-    district_id = data.get("district_id", None)
-    district_name = data.get("district_name", None)
-    city_id = data.get("city_id", None)
-    if district_name is None or city_id is None or district_id is None:
+    id = data.get("id", None)
+    name = data.get("name", None)
+    address_id = data.get("address_id", None)
+    if name is None or address_id is None or id is None:
         return jsonify({"sucess": False, "data": None})
-    district = District.query.filter(District.id == district_id).first()
-    district.name = district_name
-    district.city_id = city_id
+    store = Store.query.filter(store.id == id).first()
+    store.name = name
+    store.address_id = address_id
     db.session.commit()
-    data = {"id": district.id, "name": district.name, "city": city_id}
+    data = {"id": store.id, "name": store.name,
+            "address": store.address.detail}
     return jsonify({"sucess": True, "data": data})
 
 
