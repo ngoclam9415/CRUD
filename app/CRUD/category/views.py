@@ -57,7 +57,6 @@ def edit_category():
     category_id = request.form['category_id']
     category_name = request.form['category_name']
     brand_id = request.form['brand_id']
-    print(brand_id)
     db.session.query(Category).filter(Category.id == category_id).update({"name": category_name, "brand_id": int(brand_id)})
     db.session.commit()
     return redirect('/category')

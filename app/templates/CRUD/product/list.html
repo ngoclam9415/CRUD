@@ -12,12 +12,12 @@
         <div class="page-header row no-gutters py-4">
             <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
                 <span class="text-uppercase page-subtitle">Overview</span>
-                <h3 class="page-title">Category Table</h3>
+                <h3 class="page-title">Product Table</h3>
             </div>
         </div>
         <div class="col-12 text-right justify-content-end">
-            <a href="/category/create" class="btn btn-lg btn-accent ml-auto">
-                <i class="material-icons">add</i>Add new category
+            <a href="/product/create" class="btn btn-lg btn-accent ml-auto">
+                <i class="material-icons">add</i>Add new product
             </a>
         </div>
         <!-- End Page Header -->
@@ -34,11 +34,11 @@
                                 <tr>
                                     <th scope="col" class="border-0">Id</th>
                                     <th scope="col" class="border-0">Name</th>
-                                    <th scope="col" class="border-0">Brand</th>
+                                    <th scope="col" class="border-0">Category</th>
                                     <th scope="col" class="border-0">Actions</th>
                                 </tr>
                                 </thead>
-                                <tbody id="body-category">
+                                <tbody id="body-product">
                                 <input style="display: none;" name="totalPages" id="totalPages"
                                        value="{{ total_pages }}"/>
                                 </tbody>
@@ -54,30 +54,30 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Modify category</h5>
+                        <h5 class="modal-title" id="exampleModalLabel">Modify product</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form action="{{ url_for('category.edit_category') }}" method="POST">
+                        <form action="{{ url_for('product.edit_product') }}" method="POST">
                             <div class="form-group">
                                 <label for="id_edit" class="col-sm-2" style="padding-left: 0">Id</label>
-                                <input type="text" class="form-control form-control-lg" name="category_id" id="id_edit"
+                                <input type="text" class="form-control form-control-lg" name="product_id" id="id_edit"
                                        readonly>
                             </div>
                             <div class="form-group">
                                 <label for="name_edit" class="col-sm-2" style="padding-left: 0">Name</label>
-                                <input type="text" class="form-control form-control-lg" name="category_name"
+                                <input type="text" class="form-control form-control-lg" name="product_name"
                                        id="name_edit" required />
                             </div>
                             <div class="form-group">
                                 <label for="city_edit" class="col-sm-2"
-                                       style="padding-left: 0">Brand</label>
-                                <select class="form-control form-control-lg" name="brand_id"
-                                       id="brand_id_edit">
-                                    {% for brand in brands %}
-                                        <option value="{{ brand.id }}">{{ brand.name }}</option>
+                                       style="padding-left: 0">Category</label>
+                                <select class="form-control form-control-lg" name="category_id"
+                                       id="category_id_edit">
+                                    {% for category in categories %}
+                                        <option value="{{ category.id }}">{{ category.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -105,43 +105,43 @@
             visiblePages: 2,
             onPageClick: function (event, page) {
                 $('#page-content').text('Page ' + page);
-                $.ajax('/category/api/list?page=' + page,
+                $.ajax('/product/api/list?page=' + page,
                     {
                         dataType: 'json',
                         success: function (data) {
-                            var allCategory = "";
-                            $('#body-category').empty();
+                            var allproduct = "";
+                            $('#body-product').empty();
                             for (var i = 0; i < data.data.length; i++) {
-                                var addCategory = `
+                                var addproduct = `
                                 <tr>
                                     <td>` + data.data[i].id + `</td>
                                     <td>` + data.data[i].name + `</td>
-                                    <td>` + data.data[i].brand_name + `</td>
+                                    <td>` + data.data[i].category_name + `</td>
                                     <td>
                                         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">EDIT</button>
                                     </td>
                                 </tr>
                                 `;
-                                allCategory = allCategory + addCategory;
+                                allproduct = allproduct + addproduct;
                             }
-                            $('#body-category').append($(allCategory));
+                            $('#body-product').append($(allproduct));
                             $(".btn.btn-info").on("click", function () {
                                 var this_row = $(this).closest("tr");
-                                var category_id = this_row
+                                var product_id = this_row
                                     .find("td")
                                     .eq(0)
                                     .text();
-                                var category_name = this_row
+                                var product_name = this_row
                                     .find("td")
                                     .eq(1)
                                     .text();
-                                var brand_name = this_row
+                                var category_name = this_row
                                     .find("td")
                                     .eq(2)
                                     .text();
-                                $("#id_edit").val(category_id);
-                                $("#name_edit").val(category_name);
-                                $("#brand_name_edit").val(brand_name);
+                                $("#id_edit").val(product_id);
+                                $("#name_edit").val(product_name);
+                                $("#category_name_edit").val(category_name);
                             });
                         },
                         error: function (jqXhr, textStatus, errorMessage) { // error callback
