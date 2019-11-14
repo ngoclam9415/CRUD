@@ -28,6 +28,18 @@ class CategoryTestCase(FlaskClientTestCase):
             ), follow_redirects=True)
             self.assertIn(response.status, '200 OK')
 
+    # Ensure category is created with category_name is empty
+    def test_create_cate_1(self):
+        with self.client:
+            new_brand = Brand(name="Samsung")
+            db.session.add(new_brand)
+            db.session.commit()
+            response = self.client.post('/category/create', data=dict(
+                category_name="",
+                brand_id="1"
+            ), follow_redirects=True)
+            self.assertIn(b"Your category is error", response.data)
+
     # Ensure api list category is working correctly
     def test_api_list_cate(self):
         with self.client:
