@@ -4,20 +4,23 @@
 
 <div class="main-content-container container-fluid px-4">
     <!-- Page Header -->
-    <div class="page-header row no-gutters py-4 mb-3 border-bottom">
+    <div class="page-header row no-gutters py-4">
         <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
             <span class="text-uppercase page-subtitle">Overview</span>
-            <h3 class="page-title">Show addresses</h3>
+            <h3 class="page-title">Address Table</h3>
         </div>
-
+    </div>
+    <div class="col-12 text-right justify-content-end">
+        <a href="/address/create" class="btn btn-lg btn-accent ml-auto">
+            <i class="material-icons">add</i>Add new address
+        </a>
     </div>
     <!-- End Page Header -->
+    <!-- Default Light Table -->
+    <br><br>
 
     <div class="row">
         <div class="col">
-            <button type="button" onclick="location.href='/address/create';"
-                class="mb-2 btn btn-primary mr-2">Create</button>
-
             <div class="card card-small mb-4">
 
                 <div class="card-body p-0 pb-3 text-center">
@@ -42,7 +45,7 @@
                                 <td data-city-id="{{ address.city_id }}">{{ address.city }}</td>
                                 <td>
                                     <button data-toggle="modal" data-target="#exampleModal"
-                                        class="mb-2 btn btn-sm btn-primary mr-1">Edit</button>
+                                        class="mb-2 btn btn-md btn-info mr-1">Edit</button>
                                 </td>
                             </tr>
                             {% endfor %}

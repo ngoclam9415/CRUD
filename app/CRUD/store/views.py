@@ -38,10 +38,10 @@ def api_edit():
     if name is None or address_id is None or id is None:
         return jsonify({"sucess": False, "data": None})
     store = Store.query.filter(Store.id == id).first()
-    store.name = name
+    store.store_name = name
     store.address_id = address_id
     db.session.commit()
-    data = {"id": store.id, "name": store.name,
+    data = {"id": store.id, "name": store.store_name,
             "address": store.address.detail}
     return jsonify({"sucess": True, "data": data})
 
