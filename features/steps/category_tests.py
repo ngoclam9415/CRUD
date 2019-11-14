@@ -1,9 +1,5 @@
-import time
-
 from behave import *
-# Given I open brand
-#     Then I click add new brand
-#     Then I add new brand into form
+
 
 @given('I open category')
 def step_impl(context):

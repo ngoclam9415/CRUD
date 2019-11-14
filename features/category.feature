@@ -16,19 +16,19 @@ Feature: Check website
     Then I add new <category> into form
 
     Examples:
-      | category        |
-      | Bún mắm         |
-      | Bánh đa         |
-      | Đậu xanh        |
-      | Ly              |
-      | Tivi            |
-      | Cửa sổ          |
-      | Ghế             |
-      | Muỗng           |
-      | Dây cáp         |
-      | Áo khoác        |
-      | bánh tráng trộn |
-#
+      | category            |
+      | Bún mắm             |
+      | Bánh đa             |
+      | Đậu xanh            |
+      | Ly                  |
+      | Tivi                |
+      | Cửa sổ              |
+      | Ghế                 |
+      | Muỗng               |
+      | Dây cáp             |
+      | Áo khoác            |
+      | bánh tráng trộn new |
+
   Scenario: Open website and edit category
     Given I open category
     Then I print the category html
