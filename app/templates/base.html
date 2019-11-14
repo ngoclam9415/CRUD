@@ -42,17 +42,6 @@
                         </a>
                     </nav>
                 </div>
-                <form action="#" class="main-sidebar__search w-100 border-right d-sm-flex d-md-none d-lg-none">
-                    <div class="input-group input-group-seamless ml-3">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                <i class="fas fa-search"></i>
-                            </div>
-                        </div>
-                        <input class="navbar-search form-control" type="text" placeholder="Search for something..."
-                            aria-label="Search">
-                    </div>
-                </form>
                 <div class="nav-wrapper">
                     <ul class="nav flex-column">
                         <li class="nav-item">
@@ -110,16 +99,6 @@
                             </a>
                         </li>
                 </div>
-                <form action="#" class="main-sidebar__search w-100 border-right d-sm-flex d-md-none d-lg-none">
-                    <div class="input-group input-group-seamless ml-3">
-                        <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                <i class="fas fa-search"></i>
-                            </div>
-                            <input class="navbar-search form-control" type="text" placeholder="Search for something..."
-                                aria-label="Search">
-                        </div>
-                </form>
                 <ul class="navbar-nav border-left flex-row ">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#"
@@ -137,17 +116,6 @@
             <div class="main-navbar sticky-top bg-white">
                 <!-- Main Navbar -->
                 <nav class="navbar align-items-stretch navbar-light flex-md-nowrap p-0">
-                    <form action="#" class="main-navbar__search w-100 d-none d-md-flex d-lg-flex">
-                        <div class="input-group input-group-seamless ml-3">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">
-                                    <i class="fas fa-search"></i>
-                                </div>
-                            </div>
-                            <input class="navbar-search form-control" type="text" placeholder="Search for something..."
-                                aria-label="Search">
-                        </div>
-                    </form>
                     <ul class="navbar-nav border-left flex-row ">
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle text-nowrap px-3" data-toggle="dropdown" href="#"
@@ -196,7 +164,7 @@
     <script src="{{ url_for('static', filename='scripts/extras.1.1.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/shards-dashboards.1.1.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/image-resize.min.js') }}"></script>
-
+    <script src="{{ url_for('static', filename='handle_edit_form.js') }}"></script>
     {% block addition %}
     {% endblock %}
 </body>
