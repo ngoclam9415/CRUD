@@ -11,7 +11,7 @@ def before_all(context):
     context.app = create_app('testing')
     context.app_context = context.app.app_context()
     context.app_context.push()
-    db.drop_all()
+    # db.drop_all()
     db.create_all()
     context.server = simple_server.WSGIServer(("", 5000), WSGIRequestHandler)
     context.server.set_app(context.app)
@@ -19,6 +19,9 @@ def before_all(context):
     context.pa_app.start()
     context.url = "http://localhost:5000"
     context.client = context.app.test_client(use_cookies=True)
+    context.browser = webdriver.Chrome('dependencies/chromedriver')
+    context.browser.maximize_window()
+    context.browser.implicitly_wait(20)
 
 
 def before_feature(context, feature):
@@ -27,19 +30,11 @@ def before_feature(context, feature):
 
 # Scenario level objects are popped off context when scenario exits
 def before_scenario(context, scenario):
-    context.browser = webdriver.Chrome('dependencies/chromedriver')
-    context.browser.maximize_window()
-    context.browser.implicitly_wait(20)
     print("Before scenario\n")
 
 
-
-
 def after_scenario(context, scenario):
-    context.browser.quit()
-
-
-print("After scenario\n")
+    print("After scenario\n")
 
 
 def after_feature(context, feature):
@@ -48,6 +43,7 @@ def after_feature(context, feature):
 
 def after_all(context):
     print("Executing after all")
+    context.browser.quit()
     context.server.shutdown()
     context.pa_app.join()
     
