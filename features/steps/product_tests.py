@@ -27,3 +27,23 @@ def step_impl(context, product):
     last_row = rows[len(rows) - 1]
     field_text = last_row.find_elements_by_tag_name("td")[1].text
     assert field_text == product
+
+
+@then('I click edit the first product')
+def step_impl(context):
+    context.browser.find_elements_by_css_selector('.btn.btn-info')[0].click()
+
+
+@then('I edit this product and submit form')
+def step_impl(context):
+    product_name = context.browser.find_element_by_name('product_name')
+    product_name.clear()
+    product_name.send_keys('Do an vat so 69 viet nam')
+    category_ids = context.browser.find_element_by_name('category_id')
+    options = category_ids.find_elements_by_tag_name('option')
+    for option in options:
+        if option.get_attribute("value") == "1":
+            option.click()
+    context.browser.find_element_by_id('modify').click()
+    title = context.browser.find_element_by_tag_name('h3')
+    assert "Product Table" in title.text
