@@ -9,7 +9,7 @@ city_blueprint = Blueprint('city', __name__, template_folder='templates')
 @city_blueprint.route('/api/list', methods=['GET'])
 def list_city_api():
     page = request.args.get('page', 1, type=int)
-    cities = City.query.paginate(page, 10, error_out=False)
+    cities = City.query.order_by(City.id).paginate(page, 10, error_out=False)
     total_pages = cities.pages
     arr_city = []
     for city in cities.items:
@@ -28,7 +28,7 @@ def list_city_api():
 @city_blueprint.route('/', methods=['GET'])
 def list_city():
     page = request.args.get('page', 1, type=int)
-    cities = City.query.paginate(page, 10, error_out=False)
+    cities = City.query.order_by(City.id).paginate(page, 10, error_out=False)
     total_pages = cities.pages
     return render_template('CRUD/city/list.html', total_pages=total_pages, city_active="active")
 

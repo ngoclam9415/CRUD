@@ -2,29 +2,33 @@ from behave import given, when, then
 from app import create_app, db
 
 
-@given(u'When get into "city" page with blank list and click the button with id "create-btn".')
-def step_impl_1(context):
+@given(u'When get into "city" page with blank list and click the create button.')
+def when_click_create(context):
     print("HERE" + context.url + "/city")
     context.browser.get(context.url + "/city")
-    
-    
     create_button = context.browser.find_element_by_css_selector(".btn.btn-lg.btn-accent.ml-auto")
     print(create_button)
     create_button.click()
 
 
-@when(u'When redirected to create window, at "cityName" form, i type in "Ho Chi Minh" and click on button with css ".btn.btn-primary"')
-def step_impl_2(context):
+@when(u'When redirected to create window, at "cityName" form, i type in {cityName} and click on button with css ".btn.btn-primary"')
+def when_typing(context, cityName):
     city_form = context.browser.find_element_by_name("cityName")
-    city_form.send_keys("Ho Chi Minh")
+    city_form.send_keys(cityName)
     create_button= context.browser.find_element_by_css_selector(".mb-2.btn.btn-primary.mr-2.w-100")
     create_button.click()
 
-@then(u'When redirected back to list window, i should see "Ho Chi Minh"')
-def step_impl_3(context):
-    last_button = context.browser.find_element_by_css_selector(".page-item.last.disabled")
+@then(u'When redirected back to list window, i should see {cityName}')
+def step_impl_3(context, cityName):
+    last_button = context.browser.find_element_by_css_selector(".page-item.last")
     last_button.click()
     rows = context.browser.find_elements_by_tag_name("tr")
     last_row = rows[len(rows) - 1]
     ciy_field_text = last_row.find_elements_by_tag_name("td")[1].text
-    assert ciy_field_text ==  "Ho Chi Minh"
+    assert ciy_field_text ==  cityName
+
+@then(u'We should not be able to create city.')
+def step_impl(context):
+    error_div = context.browser.find_elements_by_css_selector(".error__content.mt-4")[0]
+    error_h3 = error_div.find_element_by_tag_name("h3")
+    assert "error" in error_h3.text
