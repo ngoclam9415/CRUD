@@ -20,7 +20,7 @@ $("#modify").on("click", function (event) {
   });
 });
 
-$(".btn.btn-primary").on("click", function () {
+$(".btn.btn-info").on("click", function () {
   var this_row = $(this).closest("tr");
   console.log(this_row);
   var district_id = this_row

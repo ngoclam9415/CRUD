@@ -20,9 +20,9 @@ $("#modify").on("click", function (event) {
     });
 });
 
-$(".mb-2.btn.btn-sm.btn-primary.mr-1").on("click", function () {
+$(".mb-2.btn.btn-md.btn-info.mr-1").on("click", function () {
     var currentRow = $(this).closest("tr");
-    console.log(currentRow)
+
     var addressId = currentRow
         .find("td")
         .eq(0)

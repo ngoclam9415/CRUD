@@ -9,12 +9,12 @@
     <div class="page-header row no-gutters py-4">
         <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
             <span class="text-uppercase page-subtitle">Overview</span>
-            <h3 class="page-title">Store Table</h3>
+            <h3 class="page-title">Product Variant Table</h3>
         </div>
     </div>
     <div class="col-12 text-right justify-content-end">
-        <a href={{ url_for("store.create") }} class="btn btn-lg btn-accent ml-auto" id="create">
-            <i class="material-icons">add</i>Add new store
+        <a href={{ url_for("variant.create") }} class="btn btn-lg btn-accent ml-auto" id="create">
+            <i class="material-icons">add</i>Add new variant
         </a>
     </div>
     <br>
@@ -30,18 +30,24 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th scope="col" class="border-0">Id</th>
-                                    <th scope="col" class="border-0">Store Name</th>
-                                    <th scope="col" class="border-0">Store Address</th>
+                                    <th scope="col" class="border-0">Product Name</th>
+                                    <th scope="col" class="border-0">Color</th>
+                                    <th scope="col" class="border-0">Store</th>
+                                    <th scope="col" class="border-0">Price</th>
                                     <th scope="col" class="border-0">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="body-cmt">
-                                {% for store in stores %}
+                                {% for variant in variants %}
                                 <tr>
-                                    <td>{{ store.id }}</td>
-                                    <td>{{ store.store_name }}</td>
-                                    <td value={{store.address.id}}>{{ store.address.detail}},
-                                        {{store.address.district.name}}, {{store.address.district.city.name}}</td>
+                                    <td>{{ variant.id }}</td>
+                                    <td value="{{ variant.product.id }}">{{ variant.product.name }}</td>
+                                    <td value="{{ variant.color.id }}">{{ variant.color.value }}</td>
+                                    <td value={{variant.store.id}}>{{ variant.store.address.detail}},
+                                        {{variant.store.address.district.name}},
+                                        {{variant.store.address.district.city.name}}</td>
+
+                                    <td>{{ variant.price }}</td>
                                     <td><button type="button" class="btn btn-info" data-toggle="modal"
                                             data-target="#exampleModal">EDIT</button></td>
                                 </tr>
@@ -62,7 +68,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modify Store</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Modify Product Variant</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -70,21 +76,41 @@
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
-                            <label for="id_edit" class="col-sm-2" style="padding-left: 0">Store Id</label>
+                            <label for="id_edit" class="lg-2" style="padding-left: 0">Product Variant Id</label>
                             <input type="text" class="form-control form-control-lg" id="id_edit" readonly>
                         </div>
                         <div class="form-group">
-                            <label for="name_edit" class="col-sm-2" style="padding-left: 0">Store Name</label>
-                            <input type="text" class="form-control form-control-lg" id="name_edit" placeholder="Red">
-                        </div>
-                        <div class="form-group">
-                            <label for="address_edit" class="col-sm-2" style="padding-left: 0">Address</label>
-                            <select class="form-control form-control-lg" id="address_edit">
-                                {% for address in addresses %}
-                                <option value="{{address.id}}">{{address.detail}}, {{address.district.name}},
-                                    {{address.district.city.name}}</option>
+                            <label for="product_edit" class="col-sm-2" style="padding-left: 0">Product Type</label>
+                            <select class="form-control form-control-lg" id="product_edit" name="product_id">
+                                {% for product in products %}
+                                <option value="{{product.id}}">{{product.name}}</option>
                                 {% endfor %}
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="store_edit" class="col-sm-2" style="padding-left: 0">Store</label>
+                            <select class="form-control form-control-lg" id="store_edit" name="store_id">
+                                {% for store in stores %}
+                                <option value="{{store.id}}">{{store.store_name}}, {{ store.address.detail }},
+                                    {{ store.address.district.name }}, {{ store.address.district.city.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="color_edit" class="col-sm-2" style="padding-left: 0">Color</label>
+                            <select class="form-control form-control-lg" id="color_edit" name="color_id">
+                                {% for color in colors %}
+                                <option value="{{color.id}}">{{color.value}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <strong class="text-muted d-block mb-2">Price</strong>
+                            <div class="input-group mb-3">
+                                <input type="number" class="form-control form-control-lg" placeholder="1000000"
+                                    aria-label="Pirce" aria-describedby="basic-addon1" id="price_edit"
+                                    name="product_variant_price" />
+                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary btn-lg" data-dismiss="modal">Close</button>
@@ -107,7 +133,7 @@
 {% endblock %}
 
 {% block addition %}
-<script src="{{ url_for('static', filename='store/store.js') }}"></script>
+<script src="{{ url_for('static', filename='variant/variant.js') }}"></script>
 <script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
 <script>
     $('#pagination').twbsPagination({

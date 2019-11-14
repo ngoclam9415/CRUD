@@ -1,10 +1,10 @@
-var edit_url = window.location.origin + "/district/store/api_edit";
+var edit_url = "/store/api/edit";
 
-$("#exampleModal").on("shown.bs.modal", function() {
+$("#exampleModal").on("shown.bs.modal", function () {
   console.log("POP UP in store");
 });
 
-$("#modify").on("click", function(event) {
+$("#modify").on("click", function (event) {
   event.preventDefault();
   var id = $("#id_edit").val();
   var name = $("#name_edit").val();
@@ -19,7 +19,7 @@ $("#modify").on("click", function(event) {
   });
 });
 
-$(".btn.btn-info").on("click", function() {
+$(".btn.btn-info").on("click", function () {
   var this_row = $(this).closest("tr");
   console.log(this_row);
   var id = this_row
