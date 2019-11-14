@@ -18,3 +18,8 @@ Feature: Check product
       | Dây cáp nao day          |
       | Áo khoác lanh lam        |
       | bánh tráng trộn huhu nha |
+
+  Scenario: Open website and edit product
+    Given I open product
+    Then I click edit the first product
+    Then I edit this product and submit form
