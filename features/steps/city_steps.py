@@ -1,6 +1,4 @@
 from behave import given, when, then
-from app import create_app, db
-
 
 @given(u'When get into "city" page with blank list and click the create button.')
 def when_click_create(context):
@@ -32,3 +30,21 @@ def step_impl(context):
     error_div = context.browser.find_elements_by_css_selector(".error__content.mt-4")[0]
     error_h3 = error_div.find_element_by_tag_name("h3")
     assert "error" in error_h3.text
+
+@given('I open city')
+def step_impl(context):
+    context.browser.get(context.url + "/city")
+
+@then('I click edit the first city')
+def step_impl(context):
+    context.browser.find_elements_by_css_selector('.btn.btn-info')[0].click()
+
+
+@then('I edit this city and submit form')
+def step_impl(context):
+    city_name = context.browser.find_element_by_name('city_name')
+    city_name.clear()
+    city_name.send_keys('Viet nam vo dich')
+    context.browser.find_element_by_id('modify').click()
+    title = context.browser.find_element_by_tag_name('h3')
+    assert "City Table" in title.text
