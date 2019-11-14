@@ -11,7 +11,7 @@ def before_all(context):
     context.app = create_app('testing')
     context.app_context = context.app.app_context()
     context.app_context.push()
-    # db.drop_all()
+    db.drop_all()
     db.create_all()
     context.server = simple_server.WSGIServer(("", 5000), WSGIRequestHandler)
     context.server.set_app(context.app)
