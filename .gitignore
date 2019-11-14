@@ -205,3 +205,4 @@ venv/
 .vscode
 config.py
 dependencies/*
+.idea/*
