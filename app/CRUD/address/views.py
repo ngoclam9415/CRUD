@@ -61,7 +61,7 @@ def list_addresses():
 
 @address_blueprint.route('/edit', methods=['POST'])
 def edit_address():
-    new_address_info = request.get_json()
+    new_address_info = request.form
 
     db.session.query(Address).filter(
         Address.id == new_address_info.get('address_id', None)).update(
