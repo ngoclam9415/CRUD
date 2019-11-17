@@ -206,3 +206,5 @@ venv/
 config.py
 dependencies/*
 .idea/*
+
+*.sqlite
