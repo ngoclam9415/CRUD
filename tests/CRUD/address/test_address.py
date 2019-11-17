@@ -39,23 +39,6 @@ class ProductTestCase(FlaskClientTestCase):
                 '/address?page=1', follow_redirects=True)
             self.assertIn(response.status, '200 OK')
 
-    # Ensure address is edit
-    def test_edit_prod(self):
-        with self.client:
-            q1_id = create_temp_district()
-
-            new_address = Address(detail="Giang Vo", district_id=q1_id)
-            db.session.add(new_address)
-            db.session.commit()
-
-            response = self.client.post('/address/edit', data=dict(
-                district_id=q1_id,
-                address_detail="Hoang Nghiem",
-                address_id=new_address.id,
-
-            ), follow_redirects=True)
-            self.assertIn(response.status, '200 OK')
-
 
 def create_temp_district():
     try:
