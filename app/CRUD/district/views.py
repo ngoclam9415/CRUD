@@ -32,10 +32,9 @@ def edit_district():
     district_id = data.get("district_id", None)
     district_name = data.get("district_name", None)
     city_id = data.get("city_id", None)
-    if district_name is None or city_id is None or district_id is None or not access_factory.get_access("district").verify_qualified_item( name=district_name, city_id=city_id):
+    if district_name is None or city_id is None or district_id is None or not access_factory.get_access("district").verify_qualified_item(name=district_name, city_id=city_id):
         return jsonify({"success": False, "data": None})
     access_factory.get_access("district").edit_item(district_id, name=district_name, city_id=city_id)
-    # data = {"id": district.id, "name": district.name, "city": city_id}
     return jsonify({"success": True})
 
 
