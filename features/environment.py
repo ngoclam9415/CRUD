@@ -1,6 +1,6 @@
 from selenium import webdriver
 from flasky import app
-from app import db, create_app
+from database.mysql_access.models import db, create_app
 import threading
 from wsgiref import simple_server
 from wsgiref.simple_server import WSGIRequestHandler

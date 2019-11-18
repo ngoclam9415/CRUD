@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
-from app.models import District, City, Address
-from app import db
+from database.mysql_access.models import District, City, Address
+from database.mysql_access.models import db
 
 address_blueprint = Blueprint('address', __name__, template_folder='templates')
 

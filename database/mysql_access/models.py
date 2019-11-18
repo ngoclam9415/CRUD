@@ -1,5 +1,6 @@
-from app import db, create_app
+from flask_sqlalchemy import SQLAlchemy
 
+db = SQLAlchemy()
 
 class City(db.Model):
     __tablename__ = 'city'

@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, make_response, jsonify, redirect
 
-from app import db
-from app.models import City
+from database.mysql_access.models import db
+from database.mysql_access.models import City
+from database import access_factory
 
 city_blueprint = Blueprint('city', __name__, template_folder='templates')
 
@@ -9,39 +10,23 @@ city_blueprint = Blueprint('city', __name__, template_folder='templates')
 @city_blueprint.route('/api/list', methods=['GET'])
 def list_city_api():
     page = request.args.get('page', 1, type=int)
-    cities = City.query.order_by(City.id).paginate(page, 10, error_out=False)
-    total_pages = cities.pages
-    arr_city = []
-    for city in cities.items:
-        tmp_city = {
-            'id': city.id,
-            'name': city.name
-        }
-        arr_city.append(tmp_city)
-    res = {
-        "total_pages": total_pages,
-        "data": arr_city,
-    }
+    res = access_factory.get_access("city").list_item(page=page)
     return make_response(jsonify(res), 200)
 
 
 @city_blueprint.route('/', methods=['GET'])
 def list_city():
     page = request.args.get('page', 1, type=int)
-    cities = City.query.order_by(City.id).paginate(page, 10, error_out=False)
-    total_pages = cities.pages
-    return render_template('CRUD/city/list.html', total_pages=total_pages, city_active="active")
+    res = access_factory.get_access("city").list_item(page=page)
+    return render_template('CRUD/city/list.html', total_pages=res["total_pages"], city_active="active")
 
 
 @city_blueprint.route('/create', methods=['GET', 'POST'])
 def create_city(error=None):
     if request.method == 'POST':
         city_name = request.form['cityName']
-        city_exist = City.query.filter_by(name=city_name).first()
-        if city_exist is None and city_name != "":
-            new_city = City(name=city_name)
-            db.session.add(new_city)
-            db.session.commit()
+        if access_factory.get_access("city").verify_qualified_item(name=city_name) and city_name != "":
+            access_factory.get_access("city").create_item(name=city_name)
             return redirect('/city')
         else:
             error = "Your city is error"
@@ -52,6 +37,5 @@ def create_city(error=None):
 def edit_city():
         city_id = request.form['city_id']
         city_name = request.form['city_name']
-        db.session.query(City).filter(City.id == city_id).update({"name": city_name})
-        db.session.commit()
+        access_factory.get_access("city").edit_item(city_id, name=city_name)
         return redirect('/city')

@@ -1,7 +1,7 @@
 
-from app.models import Brand
+from database.mysql_access.models import Brand
 from tests.test_client import FlaskClientTestCase
-from app import db
+from database.mysql_access.models import db
 
 import unittest
 

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for
-from app.models import City, District
-from app import db
+from database.mysql_access.models import City, District
+from database.mysql_access.models import db
+from database import access_factory
 
 district_blueprint = Blueprint(
     'district', __name__, template_folder='templates')
@@ -8,11 +9,9 @@ district_blueprint = Blueprint(
 
 @district_blueprint.route('/', methods=['GET'])
 def district():
-    per_page = 10
     page = request.args.get("page", 1, type=int)
-    cities = City.query.all()
-    results = District.query.paginate(page, per_page, error_out=False)
-    return render_template('CRUD/district/district.html', infos=results.items, district_active="active", cities=cities, pages=results.pages)
+    res = access_factory.get_access("district").list_item(page=page)
+    return render_template('CRUD/district/district.html', infos=res["infos"], district_active="active", cities=res["cities"], pages=res["pages"])
 
 
 @district_blueprint.route('/api/create', methods=['POST'])
@@ -20,11 +19,10 @@ def create_district():
     data = request.values
     district_name = data.get("district_name", None)
     city_id = data.get("city_id", None)
-    if district_name is None or city_id is None:
-        return jsonify({"sucess": False, "data": None})
-    district = District(name=district_name, city_id=city_id)
-    db.session.add(district)
-    db.session.commit()
+    if access_factory.get_access("district").verify_qualified_item(name=district_name, city_id=city_id) and district_name != "":
+        access_factory.get_access("district").create_item(name=district_name, city_id=city_id)
+    else:
+        return jsonify({"success": False, "data": None})
     return redirect(url_for("district.district"))
 
 
@@ -34,14 +32,11 @@ def edit_district():
     district_id = data.get("district_id", None)
     district_name = data.get("district_name", None)
     city_id = data.get("city_id", None)
-    if district_name is None or city_id is None or district_id is None:
-        return jsonify({"sucess": False, "data": None})
-    district = District.query.filter(District.id == district_id).first()
-    district.name = district_name
-    district.city_id = city_id
-    db.session.commit()
-    data = {"id": district.id, "name": district.name, "city": city_id}
-    return jsonify({"sucess": True, "data": data})
+    if district_name is None or city_id is None or district_id is None or not access_factory.get_access("district").verify_qualified_item( name=district_name, city_id=city_id):
+        return jsonify({"success": False, "data": None})
+    access_factory.get_access("district").edit_item(district_id, name=district_name, city_id=city_id)
+    # data = {"id": district.id, "name": district.name, "city": city_id}
+    return jsonify({"success": True})
 
 
 @district_blueprint.route("/create")

@@ -1,5 +1,5 @@
-from app import db
-from app.models import Category, Brand
+from database.mysql_access.models import db
+from database.mysql_access.models import Category, Brand
 from tests.test_client import FlaskClientTestCase
 
 

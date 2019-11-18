@@ -1,5 +1,5 @@
-from app import db
-from app.models import City
+from database.mysql_access.models import db
+from database.mysql_access.models import City
 from tests.test_client import FlaskClientTestCase
 
 

@@ -16,7 +16,13 @@ $("#modify").on("click", function (event) {
     district_id: district_id
   };
   send_district_info(edit_district, data).then(response => {
-    window.location.href = window.location.href;
+    console.log(response)
+    if (response.success === true){
+      window.location.href = window.location.href;
+    }
+    else {
+      alert("INVALID INPUT FOR EDIT")
+    }
   });
 });
 
