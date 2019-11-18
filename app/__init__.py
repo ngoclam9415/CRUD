@@ -2,9 +2,8 @@
 import os
 from flask import Flask
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 from config import config
-db = SQLAlchemy()
+from database import access_factory
 
 
 def create_app(config_name):
@@ -12,7 +11,7 @@ def create_app(config_name):
     CORS(app)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
-    db.init_app(app)
+    access_factory.init_app(app)
     from app.CRUD.city.views import city_blueprint
     from app.CRUD.district.views import district_blueprint
     from app.CRUD.color.views import color_blueprint

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for
-from app.models import Color
-from app import db
+from database.mysql_access.models import Color
+from database.mysql_access.models import db
 
 color_blueprint = Blueprint(
     'color', __name__, template_folder='templates')

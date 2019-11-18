@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, make_response, jsonify, redirect
 
-from app import db
-from app.models import Brand
+from database.mysql_access.models import db
+from database.mysql_access.models import Brand
 
 brand_blueprint = Blueprint('brand', __name__, template_folder='templates')
 
