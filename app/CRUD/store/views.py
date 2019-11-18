@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for
 from app.models import City, District, Address, Store
 from app import db
-from app.utils import page_number_caculater
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
