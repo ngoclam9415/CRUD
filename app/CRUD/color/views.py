@@ -1,6 +1,6 @@
-from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for
-from database.mysql_access.models import Color
+from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for, flash
 from database.mysql_access.models import db
+from database import access_factory
 
 color_blueprint = Blueprint(
     'color', __name__, template_folder='templates')
@@ -8,23 +8,19 @@ color_blueprint = Blueprint(
 
 @color_blueprint.route('/', methods=['GET'])
 def color():
-    per_page = 10
     page = request.args.get("page", 1, type=int)
-    colors = Color.query.order_by(Color.id).paginate(page, per_page, error_out=False)
-    return render_template('CRUD/color/color.html', color_active="active", colors=colors.items, pages=colors.pages)
+    res = access_factory.get_access("color").list_item(page=page)
+    return render_template('CRUD/color/color.html', color_active="active", colors=res["data"], pages=res["total_pages"])
 
 
 @color_blueprint.route('/api/create', methods=['POST'])
 def api_create():
-    # print(request.values)
     data = request.values
     color_value = data.get("value", None)
-    if color_value is None:
-        return jsonify({"sucess": False, "data": None})
-    color = Color(value=color_value)
-    db.session.add(color)
-    db.session.commit()
-    data = {"id": color.id, "name": color.value}
+    if color_value is None or color_value == "" or not access_factory.get_access("color").verify_qualified_item(value=color_value):
+        flash("INPUT COLOR ERROR", "error")
+        return redirect(url_for("color.color"))
+    access_factory.get_access("color").create_item(value=color_value)
     return redirect(url_for("color.color"))
 
 
@@ -33,13 +29,10 @@ def edit_district():
     data = request.get_json()
     id = data.get("id", None)
     value = data.get("value", None)
-    if value is None or id is None:
+    if value is None or id is None or not access_factory.get_access("color").verify_qualified_item(value=value):
         return jsonify({"sucess": False, "data": None})
-    color = Color.query.filter(Color.id == id).first()
-    color.value = value
-    db.session.commit()
-    data = {"id": color.id, "value": color.value}
-    return jsonify({"sucess": True, "data": data})
+    access_factory.get_access("color").edit_item(id, value=value)
+    return jsonify({"sucess": True})
 
 
 @color_blueprint.route("/create")
