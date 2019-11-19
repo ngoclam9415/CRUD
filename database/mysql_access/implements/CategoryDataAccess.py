@@ -18,11 +18,14 @@ class CategoryDataAccess(BaseDataAccess):
                 'brand_id' : category.brand.id
             }
             arr_category.append(tmp_category)
-        brands = self.brand_model.query.all()
-        brands = [{"id" : brand.id, "name" : brand.name} for brand in brands]
+        
         res = {
             "total_pages": categories.pages,
             "data": arr_category,
-            "brands" : brands
         }
         return res
+
+    def get_brands(self):
+        brands = self.brand_model.query.all()
+        brands = [{"id" : brand.id, "name" : brand.name} for brand in brands]
+        return brands

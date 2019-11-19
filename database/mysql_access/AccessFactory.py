@@ -2,7 +2,8 @@ from database.mysql_access.implements.CityDataAccess import CityDataAccess
 from database.mysql_access.implements.DistrictDataAccess import DistrictDataAccess
 from database.mysql_access.implements.BrandDataAccess import BrandDataAccess
 from database.mysql_access.implements.CategoryDataAccess import CategoryDataAccess
-from database.mysql_access.models import db, City, District, Brand, Category
+from database.mysql_access.implements.AddressDataAccess import AddressDataAccess
+from database.mysql_access.models import db, City, District, Brand, Category, Address
 
 class AccessFactory:
     def __init__(self):
@@ -11,6 +12,7 @@ class AccessFactory:
         self.district_access = DistrictDataAccess(self.db, District, City)
         self.brand_access = BrandDataAccess(self.db, Brand)
         self.category_access = CategoryDataAccess(self.db, Category, Brand)
+        self.address_access = AddressDataAccess(self.db, Address, Brand)
 
     def get_access(self, access_type):
         if access_type == "city":
@@ -21,6 +23,8 @@ class AccessFactory:
             return self.brand_access
         elif access_type == "category":
             return self.category_access
+        elif access_type == "address":
+            return self.address_access
 
     def init_app(self, app):
         self.db.init_app(app)
