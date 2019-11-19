@@ -11,19 +11,12 @@ def create_address():
     if request.method == 'POST':
         district_id = request.form.get('select-district')
         detail = request.form.get('address')
-
-        if not district_id or not detail:
+        if not district_id or not detail or not access_factory.get_access("address").verify_qualified_item(district_id=district_id,  detail=detail):
             flash('Vui lòng nhập lại thông tin', 'error')
             return redirect(url_for('address.create_address'))
-
-        new_address = Address(district_id=district_id,  detail=detail)
-
-        db.session.add(new_address)
-        db.session.commit()
+        access_factory.get_access("address").create_item(district_id=district_id,  detail=detail)
         return redirect(url_for('address.list_addresses'))
-
-    list_city = [city for city in City.query.all()]
-
+    list_city = access_factory.get_access("address").get_cities()
     return render_template('CRUD/address/create.html', list_city=list_city, address_active="active")
 
 
@@ -32,46 +25,25 @@ def get_district_by_city():
     city_id = request.args.get('city_id')
     if not city_id:
         return jsonify({})
-
-    districts = District.query.filter_by(city_id=city_id).all()
-
-    jsonable_district = [{'id': district.id, 'name': district.name}
-                         for district in districts]
-    return jsonify(jsonable_district)
+    districts = access_factory.get_access("address").get_districts_by_city(city_id=city_id)
+    return jsonify(districts)
 
 
 @address_blueprint.route('/', methods=['GET'])
 def list_addresses():
     page = request.args.get("page", 1, type=int)
+    res = access_factory.get_access("address").list_item(page=page)
+    list_city = access_factory.get_access("address").get_cities()
 
-    addresses_pagination = Address.query.order_by(
-        Address.id).paginate(page=page, per_page=10, error_out=False)
-
-    total_page = addresses_pagination.pages
-    current_page = addresses_pagination.page
-
-    addresses = [{'city': address.district.city.name, 'city_id': address.district.city.id,
-                  'district': address.district.name, 'district_id': address.district.id,
-                  'detail': address.detail, 'id': address.id}
-                 for address in addresses_pagination.items]
-
-    list_city = [city for city in City.query.all()]
-
-    return render_template('CRUD/address/show-address.html', addresses=addresses, total_page=total_page, current_page=current_page, list_city=list_city, address_active="active")
+    return render_template('CRUD/address/show-address.html', addresses=res["addresses"], total_page=res["total_page"], current_page=page, list_city=list_city, address_active="active")
 
 
 @address_blueprint.route('/edit', methods=['POST'])
 def edit_address():
     new_address_info = request.get_json()
-
-    db.session.query(Address).filter(
-        Address.id == new_address_info.get('address_id', None)).update(
-            {
-                "district_id": new_address_info.get('district_id'),
-                "detail": new_address_info.get('address_detail'),
-            }
-    )
-
-    db.session.commit()
-
+    address_id = new_address_info.get('address_id', None)
+    district_id = new_address_info.get('district_id')
+    detail = new_address_info.get('address_detail')
+    if detail != "" and access_factory.get_access("address").verify_qualified_item(district_id=district_id, detail=detail):
+        access_factory.get_access("address").edit_item(address_id, district_id=district_id, detail=detail)
     return jsonify({"status": "ok"})
