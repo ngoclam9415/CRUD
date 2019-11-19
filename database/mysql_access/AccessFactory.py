@@ -4,10 +4,10 @@ from database.mysql_access.implements.BrandDataAccess import BrandDataAccess
 from database.mysql_access.implements.CategoryDataAccess import CategoryDataAccess
 from database.mysql_access.implements.ColorDataAccess import ColorDataAccess
 from database.mysql_access.implements.AddressDataAccess import AddressDataAccess
+from database.mysql_access.implements.StoreDataAccess import StoreDataAccess
 from database.mysql_access.implements.AddressDataAccess import AddressDataAccess
 from database.mysql_access.implements.AddressDataAccess import AddressDataAccess
-from database.mysql_access.implements.AddressDataAccess import AddressDataAccess
-from database.mysql_access.models import db, City, District, Brand, Category, Address, Color
+from database.mysql_access.models import db, City, District, Brand, Category, Address, Color, Store
 
 class AccessFactory:
     def __init__(self):
@@ -18,6 +18,7 @@ class AccessFactory:
         self.category_access = CategoryDataAccess(self.db, Category, Brand)
         self.address_access = AddressDataAccess(self.db, Address, District, City)
         self.color_access = ColorDataAccess(self.db, Color)
+        self.store_access = StoreDataAccess(self.db, Store, Address)
 
     def get_access(self, access_type):
         if access_type == "city":
@@ -32,6 +33,8 @@ class AccessFactory:
             return self.address_access
         elif access_type == "color":
             return self.color_access
+        elif access_type == "store":
+            return self.store_access
 
     def init_app(self, app):
         self.db.init_app(app)
