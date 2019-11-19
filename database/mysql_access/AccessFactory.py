@@ -12,7 +12,7 @@ class AccessFactory:
         self.district_access = DistrictDataAccess(self.db, District, City)
         self.brand_access = BrandDataAccess(self.db, Brand)
         self.category_access = CategoryDataAccess(self.db, Category, Brand)
-        self.address_access = AddressDataAccess(self.db, Address, Brand)
+        self.address_access = AddressDataAccess(self.db, Address, District, City)
 
     def get_access(self, access_type):
         if access_type == "city":

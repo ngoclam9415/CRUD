@@ -32,10 +32,12 @@ $(".mb-2.btn.btn-md.btn-info.mr-1").on("click", function () {
         .find("td")
         .eq(3);
 
-    let cityName = cityRow.text();
-    let cityId = cityRow.data("cityId");
+    var cityName = cityRow.text();
+    var cityId = cityRow.data("cityId");
 
-    getDistrictByCity(cityId);
+    var districtId = currentRow.find("td").eq(2).data("districtId")
+    getDistrictByCity(cityId, districtId);
+    console.log(districtId)
 
     var addressDetail = currentRow
         .find("td")
@@ -59,7 +61,7 @@ async function send_address_info(url, data) {
     return await response;
 }
 
-var getDistrictByCity = (cityId) => {
+var getDistrictByCity = (cityId, districtId=undefined) => {
     if (cityId == undefined) {
 
         cityId = $("#city_edit :selected").val();
@@ -83,6 +85,9 @@ var getDistrictByCity = (cityId) => {
                         value: data[i]['id'],
                         text: data[i]['name'],
                     }));
+                }
+                if (districtId){
+                    $('#district_edit').val(districtId)
                 }
 
             } else {
