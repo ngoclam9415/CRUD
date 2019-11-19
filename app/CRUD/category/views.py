@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, make_response, jsonify, redirect, url_for, flash
 from database.mysql_access.models import db
-from database.mysql_access.models import City, Category, Brand
 from database import access_factory
 
 category_blueprint = Blueprint('category', __name__, template_folder='templates')
@@ -15,16 +14,15 @@ def list_category_api():
 
 @category_blueprint.route('/', methods=['GET'])
 def list_category():
-    # error = request.args.get("error", None)
-    # print(error)
     page = request.args.get('page', 1, type=int)
     res = access_factory.get_access("category").list_item(page=page)
-    return render_template('CRUD/category/list.html', total_pages=res["total_pages"], brands=res["brands"], category_active="active")
+    brands = access_factory.get_access("category").get_brands()
+    return render_template('CRUD/category/list.html', total_pages=res["total_pages"], brands=brands, category_active="active")
 
 
 @category_blueprint.route('/create', methods=['GET', 'POST'])
 def create_category(error=None):
-    brands = Brand.query.all()
+    brands = access_factory.get_access("category").get_brands()
     if request.method == 'POST':
         category_name = request.form['category_name']
         brand_id = request.form['brand_id']
