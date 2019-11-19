@@ -116,7 +116,7 @@
                                 <tr>
                                     <td>` + data.data[i].id + `</td>
                                     <td>` + data.data[i].name + `</td>
-                                    <td>` + data.data[i].brand_name + `</td>
+                                    <td value=` + data.data[i].brand_id + `>` + data.data[i].brand_name + `</td>
                                     <td>
                                         <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">EDIT</button>
                                     </td>
@@ -138,10 +138,11 @@
                                 var brand_name = this_row
                                     .find("td")
                                     .eq(2)
-                                    .text();
+                                    .attr("value");
+                                console.log(brand_name)
                                 $("#id_edit").val(category_id);
                                 $("#name_edit").val(category_name);
-                                $("#brand_name_edit").val(brand_name);
+                                $("#brand_id_edit").val(brand_name);
                             });
                         },
                         error: function (jqXhr, textStatus, errorMessage) { // error callback
