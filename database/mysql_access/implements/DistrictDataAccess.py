@@ -12,3 +12,6 @@ class DistrictDataAccess(BaseDataAccess):
         results = self.model.query.order_by(self.model.id).paginate(page, config.per_page, error_out=False)
         res = {"cities" : cities, "pages" : results.pages, "infos": results.items}
         return res
+
+    def get_cities(self):
+        return self.city_model.query.all()
