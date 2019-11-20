@@ -27,7 +27,6 @@ class BaseDataAccess:
     def parse(self, cursors):
         dict_item = {}
         list_item = []
-        print(cursors)
         for item in cursors:
             item["id"] = str(item["_id"])
             dict_item[item["_id"]] = item

@@ -17,7 +17,7 @@ class DistrictDataAccess(BaseDataAccess):
         districts = list(districts) 
         districts = self.create_sqlalchemy_format(districts, cities_dict)
         print("districts : ",districts)
-        res = {"pages": math.ceil(self.collection.estimated_document_count()/config.per_page),
+        res = {"pages": max(math.ceil(self.collection.estimated_document_count()/config.per_page), 1),
                 "cities" : cities_list, 
                 "infos" : districts}
         return res
