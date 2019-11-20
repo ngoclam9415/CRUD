@@ -5,7 +5,7 @@ from database.mongo_access.implements.DistrictDataAccess import DistrictDataAcce
 # from database.mongo_access.implements.CategoryDataAccess import CategoryDataAccess
 # from database.mongo_access.implements.ColorDataAccess import ColorDataAccess
 from database.mongo_access.implements.AddressDataAccess import AddressDataAccess
-# from database.mongo_access.implements.StoreDataAccess import StoreDataAccess
+from database.mongo_access.implements.StoreDataAccess import StoreDataAccess
 # from database.mongo_access.implements.ProductDataAccess import ProductDataAccess
 # from database.mongo_access.implements.ProductVariantDataAccess import ProductVariantDataAccess
 # from database.mongo_access.models import db, City, District, Brand, Category, Address, Color, Store, Product, ProductVariant
@@ -19,7 +19,7 @@ class AccessFactory:
         # self.category_access = CategoryDataAccess(self.db, Category, Brand)
         self.address_access = AddressDataAccess(self.db, "Address", "District", "City")
         # self.color_access = ColorDataAccess(self.db, Color)
-        # self.store_access = StoreDataAccess(self.db, Store, Address)
+        self.store_access = StoreDataAccess(self.db, "Store", "Address", "District", "City")
         # self.product_access = ProductDataAccess(self.db, Product, Category)
         # self.product_variant_access = ProductVariantDataAccess(self.db, ProductVariant, Product, Store, Color)
 
@@ -36,8 +36,8 @@ class AccessFactory:
             return self.address_access
         # elif access_type == "color":
         #     return self.color_access
-        # elif access_type == "store":
-        #     return self.store_access
+        elif access_type == "store":
+            return self.store_access
         # elif access_type == "product":
         #     return self.product_access
         # elif access_type == "variant":
