@@ -4,8 +4,11 @@ import os
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
 
-with app.app_context():
-    db.create_all()
+try:
+    with app.app_context():
+        db.create_all()
+except:
+    pass
 
 if __name__ == "__main__":
     app.run(debug=True)

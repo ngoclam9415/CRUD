@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for
+from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for, flash
 from database.mysql_access.models import City, District
 from database.mysql_access.models import db
 from database import access_factory
@@ -22,7 +22,8 @@ def create_district():
     if access_factory.get_access("district").verify_qualified_item(name=district_name, city_id=city_id) and district_name != "":
         access_factory.get_access("district").create_item(name=district_name, city_id=city_id)
     else:
-        return jsonify({"success": False, "data": None})
+        flash("INPUT DISTRICT INVALID", "error")
+        return redirect(url_for("district.district"))
     return redirect(url_for("district.district"))
 
 
@@ -40,5 +41,5 @@ def edit_district():
 
 @district_blueprint.route("/create")
 def test():
-    cities = City.query.all()
+    cities = access_factory.get_access("district").get_cities()
     return render_template("CRUD/district/create.html", cities=cities, district_active="active")

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, make_response, jsonify, redirect
+from flask import Blueprint, render_template, request, make_response, jsonify, redirect, flash
 
 from database.mysql_access.models import db
 from database.mysql_access.models import City
@@ -37,5 +37,8 @@ def create_city(error=None):
 def edit_city():
         city_id = request.form['city_id']
         city_name = request.form['city_name']
-        access_factory.get_access("city").edit_item(city_id, name=city_name)
+        if city_name != "" and access_factory.get_access("city").verify_qualified_item(name=city_name):
+            access_factory.get_access("city").edit_item(city_id, name=city_name)
+        else:
+            flash("CITY INPUT INVALID", "error")
         return redirect('/city')

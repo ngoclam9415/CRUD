@@ -16,7 +16,6 @@ class BaseDataAccess:
         pass
 
     def verify_qualified_item(self, **kwargs):
-        print(kwargs)
         existed_item = self.model.query.filter_by(**kwargs).first()
         if existed_item is None:
             return True
