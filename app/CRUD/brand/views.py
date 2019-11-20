@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, make_response, jsonify, redirect
+from flask import Blueprint, render_template, request, make_response, jsonify, redirect, flash
 
 from database.mysql_access.models import db
 from database.mysql_access.models import Brand
@@ -39,4 +39,6 @@ def edit_brand():
     brand_name = request.form['brand_name']
     if brand_name != "" and access_factory.get_access("brand").verify_qualified_item(name=brand_name):
         access_factory.get_access("brand").edit_item(brand_id, name=brand_name)
+    else :
+        flash("INPUT BRAND INVALID", "error")
     return redirect('/brand')
