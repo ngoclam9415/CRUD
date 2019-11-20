@@ -9,7 +9,7 @@ class CityDataAccess(BaseDataAccess):
     def list_item(self, **kwargs):
         page = kwargs.get("page", 1)
         cities = self.collection.find({}).skip(page*config.per_page - config.per_page).limit(config.per_page)
-        res = {"total_pages": math.ceil(self.collection.estimated_document_count()/config.per_page),
+        res = {"total_pages": max(math.ceil(self.collection.estimated_document_count()/config.per_page), 1),
                 "data" : [{"id" : str(city["_id"]), "name" : city["name"]} for city in cities]}
         return res
 
