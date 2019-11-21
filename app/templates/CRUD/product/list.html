@@ -38,7 +38,19 @@
                                     <th scope="col" class="border-0">Actions</th>
                                 </tr>
                                 </thead>
-                                <tbody id="body-product">
+                                    <tbody id="table-tbody-posts">
+                                        {% for product in products %}
+                                        <tr>
+                                            <td>{{ product.id }}</td>
+                                            <td>{{ product.name }}</td>
+                                            <td value="{{ product.category.id }}">{{ product.category.name}} {{product.category.brand.name}}</td>
+                                            <td>
+                                                <button data-toggle="modal" data-target="#exampleModal"
+                                                    class="mb-2 btn btn-md btn-info mr-1">Edit</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
                                 <input style="display: none;" name="totalPages" id="totalPages"
                                        value="{{ total_pages }}"/>
                                 </tbody>
@@ -77,7 +89,7 @@
                                 <select class="form-control form-control-lg" name="category_id"
                                        id="category_id_edit">
                                     {% for category in categories %}
-                                        <option value="{{ category.id }}">{{ category.name }}</option>
+                                        <option value="{{ category.id }}">{{ category.name }} {{category.brand.name}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -99,56 +111,5 @@
             </nav>
         </div>
     </div>
-    <script type="text/javascript">
-        $('#pagination').twbsPagination({
-            totalPages: parseInt($("#totalPages").attr('value')),
-            visiblePages: 2,
-            onPageClick: function (event, page) {
-                $('#page-content').text('Page ' + page);
-                $.ajax('/product/api/list?page=' + page,
-                    {
-                        dataType: 'json',
-                        success: function (data) {
-                            var allproduct = "";
-                            $('#body-product').empty();
-                            for (var i = 0; i < data.data.length; i++) {
-                                var addproduct = `
-                                <tr>
-                                    <td>` + data.data[i].id + `</td>
-                                    <td>` + data.data[i].name + `</td>
-                                    <td>` + data.data[i].category_name + `</td>
-                                    <td>
-                                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">EDIT</button>
-                                    </td>
-                                </tr>
-                                `;
-                                allproduct = allproduct + addproduct;
-                            }
-                            $('#body-product').append($(allproduct));
-                            $(".btn.btn-info").on("click", function () {
-                                var this_row = $(this).closest("tr");
-                                var product_id = this_row
-                                    .find("td")
-                                    .eq(0)
-                                    .text();
-                                var product_name = this_row
-                                    .find("td")
-                                    .eq(1)
-                                    .text();
-                                var category_name = this_row
-                                    .find("td")
-                                    .eq(2)
-                                    .text();
-                                $("#id_edit").val(product_id);
-                                $("#name_edit").val(product_name);
-                                $("#category_name_edit").val(category_name);
-                            });
-                        },
-                        error: function (jqXhr, textStatus, errorMessage) { // error callback
-                            $('p').append('Error: ' + errorMessage);
-                        }
-                    });
-            }
-        });
-    </script>
+    <script src={{url_for('static', filename='product/product.js')}}></script>
 {% endblock %}
