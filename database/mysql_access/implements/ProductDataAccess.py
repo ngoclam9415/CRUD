@@ -11,7 +11,7 @@ class ProductDataAccess(BaseDataAccess):
         products = self.model.query.order_by(self.model.id).paginate(page, config.per_page, error_out=False)
         res = {
             "total_pages": products.pages,
-            "data": [{'id' : product.id, 'name' : product.name, 'category_name' : product.category.name} for product in products.items]
+            "data": products.items
         }
         return res
 
