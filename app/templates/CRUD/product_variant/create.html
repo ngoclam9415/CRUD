@@ -31,7 +31,7 @@
                     <label for="product_edit" class="col-sm-2" style="padding-left: 0">Product Type</label>
                     <select class="form-control form-control-lg" id="product_edit" name="product_id">
                       {% for product in products %}
-                      <option value="{{product.id}}">{{product.name}}</option>
+                      <option value="{{product.id}}">{{product.category.brand.name}} {{product.name}}</option>
                       {% endfor %}
                     </select>
                     </br>

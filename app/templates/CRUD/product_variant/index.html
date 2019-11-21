@@ -41,7 +41,7 @@
                                 {% for variant in variants %}
                                 <tr>
                                     <td>{{ variant.id }}</td>
-                                    <td value="{{ variant.product.id }}">{{ variant.product.name }}</td>
+                                    <td value="{{ variant.product.id }}">{{variant.product.category.brand.name}} {{ variant.product.name }}</td>
                                     <td value="{{ variant.color.id }}">{{ variant.color.value }}</td>
                                     <td value={{variant.store.id}}>{{ variant.store.address.detail}},
                                         {{variant.store.address.district.name}},
@@ -83,7 +83,7 @@
                             <label for="product_edit" class="col-sm-2" style="padding-left: 0">Product Type</label>
                             <select class="form-control form-control-lg" id="product_edit" name="product_id">
                                 {% for product in products %}
-                                <option value="{{product.id}}">{{product.name}}</option>
+                                <option value="{{product.id}}">{{product.category.brand.name}} {{product.name}}</option>
                                 {% endfor %}
                             </select>
                         </div>
