@@ -202,10 +202,3 @@ Temporary Items
 # End of https://www.gitignore.io/api/macos,flask,python,visualstudiocode
 
 venv/
-./config.py
-.vscode
-config.py
-dependencies/*
-.idea/*
-
-*.sqlite

@@ -1,35 +1,34 @@
 
 import os
 from flask import Flask
-from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+
+
 from config import config
-from database import access_factory
+db = SQLAlchemy()
+login_manager = LoginManager()
 
 
 def create_app(config_name):
     app = Flask(__name__)
-    CORS(app)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
-    access_factory.init_app(app)
-    from app.CRUD.city.views import city_blueprint
-    from app.CRUD.district.views import district_blueprint
-    from app.CRUD.color.views import color_blueprint
-    from app.CRUD.category.views import category_blueprint
-    from app.CRUD.store.views import store_blueprint
-    from app.CRUD.address.views import address_blueprint
-    from app.CRUD.product.views import product_blueprint
-    from app.CRUD.brand.views import brand_blueprint
-    from app.CRUD.product_variant.views import variant_blueprint
 
-    app.register_blueprint(city_blueprint, url_prefix='/city')
-    app.register_blueprint(district_blueprint, url_prefix='/district')
-    app.register_blueprint(color_blueprint, url_prefix='/color')
-    app.register_blueprint(category_blueprint, url_prefix='/category')
-    app.register_blueprint(store_blueprint, url_prefix='/store')
-    app.register_blueprint(address_blueprint, url_prefix='/address')
-    app.register_blueprint(product_blueprint, url_prefix='/product')
-    app.register_blueprint(brand_blueprint, url_prefix='/brand')
-    app.register_blueprint(variant_blueprint, url_prefix='/variants')
+    db.init_app(app)
+    login_manager.init_app(app)
 
+    # with 'strong' setting,
+    # Flask-Login will keep track of the client’s IP address and browser agent
+    # and will log the user out if it detects a change.”
+    login_manager.session_protection = 'strong'
+    login_manager.login_view = 'auth.login'
+    from .models import User
+
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    from .auth.auth_providers import OAuthSignIn
+    from .auth.facebook_oauth import FacebookSignIn
+    from .auth.twitter_oauth import TwitterSignIn
     return app
