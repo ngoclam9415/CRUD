@@ -385,7 +385,7 @@
   $.fn.twbsPagination.defaults = {
     totalPages: 1,
     startPage: 1,
-    visiblePages: 5,
+    visiblePages: 2,
     initiateStartPageClick: true,
     hideOnlyOnePage: false,
     href: false,
