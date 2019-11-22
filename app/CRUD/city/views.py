@@ -1,49 +1,44 @@
-from flask import flash, redirect, render_template, Blueprint
-from project.users.oauth import OAuthSignIn
-from .forms import RegisterForm
-from project import db
-from project.models import User
-users_blueprint = Blueprint('users', __name__,
-                            template_folder='templates'
-                            )
+from flask import Blueprint, render_template, request, make_response, jsonify, redirect, flash
+
+from database.mysql_access.models import db
+from database.mysql_access.models import City
+from database import access_factory
+
+city_blueprint = Blueprint('city', __name__, template_folder='templates')
 
 
-@users_blueprint.route('/ register', methods=['GET', 'POST'])
-def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        user_exist_fb = User.query.filter_by(email=form.email.data).first()
-        if user_exist_fb is None:
-            user = User(email=form.email.data, password=form.password.data)
-            db.session.add(user)
-            db.session.commit()
-            flash('You sign up successful.')
+@city_blueprint.route('/api/list', methods=['GET'])
+def list_city_api():
+    page = request.args.get('page', 1, type=int)
+    res = access_factory.get_access("city").list_item(page=page)
+    return make_response(jsonify(res), 200)
+
+
+@city_blueprint.route('/', methods=['GET'])
+def list_city():
+    page = request.args.get('page', 1, type=int)
+    res = access_factory.get_access("city").list_item(page=page)
+    return render_template('CRUD/city/list.html', total_pages=res["total_pages"], city_active="active")
+
+
+@city_blueprint.route('/create', methods=['GET', 'POST'])
+def create_city(error=None):
+    if request.method == 'POST':
+        city_name = request.form['cityName']
+        if access_factory.get_access("city").verify_qualified_item(name=city_name) and city_name != "":
+            access_factory.get_access("city").create_item(name=city_name)
+            return redirect('/city')
         else:
-            flash('Your email have already signed up.')
-    return render_template('register.html', form=form)
+            error = "Your city is error"
+    return render_template('CRUD/city/create.html', error=error, city_active="active")
 
 
-@users_blueprint.route('/ authorize/<provider >')
-def oauth_authorize(provider):
-    oauth = OAuthSignIn.get_provider(provider)
-    return oauth.authorize()
-
-
-@users_blueprint.route('/ callback/<provider >')
-def oauth_callback(provider):
-    oauth = OAuthSignIn.get_provider(provider)
-    id_social, email = oauth.callback()
-    user_exist = User.query.filter_by(email=email).first()
-    if (user_exist is None) and (email is not None):
-        user = User(
-            email=email,
-            email_fb=email if provider == “facebook” else None,
-            email_tw=email if provider == “twitter” else None,
-            id_fb=id_social if provider == “facebook” else None,
-            id_tw=id_social if provider == “twitter” else None)
-        db.session.add(user)
-        db.session.commit()
-        flash('You sign up ' + provider + ' successful. ')
-    else:
-        flash('You have already signed up ' + provider + '.')
-    return redirect('/ register')
+@city_blueprint.route('/edit', methods=['POST'])
+def edit_city():
+        city_id = request.form['city_id']
+        city_name = request.form['city_name']
+        if city_name != "" and access_factory.get_access("city").verify_qualified_item(name=city_name):
+            access_factory.get_access("city").edit_item(city_id, name=city_name)
+        else:
+            flash("CITY INPUT INVALID", "error")
+        return redirect('/city')
