@@ -22,7 +22,7 @@ class BaseModel:
         flag = self.collection.find_and_modify(
                 query=kwargs,
                 update=kwargs,
-                upsert=True, new=True, fields={"_id" : 1}
+                upsert=True, new=True
         )
         if flag["_id"] not in self.dict.keys():
             kwargs["id"] = str(flag["_id"])

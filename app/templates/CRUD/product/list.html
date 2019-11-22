@@ -112,4 +112,15 @@
         </div>
     </div>
     <script src={{url_for('static', filename='product/product.js')}}></script>
+    <script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
+    <script>
+        $('#pagination').twbsPagination({
+            startPage: 1,
+            totalPages: {{ total_pages }},
+            pageVariable: 'page',
+            visiblePages: 2,
+            href: true,
+            defaultHref: '?page=',
+        });
+    </script>
 {% endblock %}
