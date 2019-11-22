@@ -15,7 +15,6 @@ class AddressDataAccess(BaseDataAccess):
         page = kwargs.get("page", 1)
         addresses = self.collection.paginate(page, config.per_page)
         addresses = self.create_sqlalchemy_format(addresses, self.district_col.dict, self.city_col.dict)
-        print("addresses : ",addresses)
         res = {"total_page": self.collection.get_pages(config.per_page),
                 "addresses" : addresses}
         return res

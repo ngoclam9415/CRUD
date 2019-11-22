@@ -17,7 +17,6 @@ def create_address():
         access_factory.get_access("address").create_item(district_id=district_id,  detail=detail)
         return redirect(url_for('address.list_addresses'))
     list_city = access_factory.get_access("address").get_cities()
-    print(list_city)
     return render_template('CRUD/address/create.html', list_city=list_city, address_active="active")
 
 
@@ -35,7 +34,6 @@ def list_addresses():
     page = request.args.get("page", 1, type=int)
     res = access_factory.get_access("address").list_item(page=page)
     list_city = access_factory.get_access("address").get_cities()
-    print(res["total_page"])
     return render_template('CRUD/address/show-address.html', addresses=res["addresses"], total_page=res["total_page"], current_page=page, list_city=list_city, address_active="active")
 
 
