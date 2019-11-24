@@ -12,7 +12,7 @@ class BaseModel:
         self.db = self.mongodb["product"]
         self.collection = self.add_collection(collection)
         self.redis_accessor = redis_accessor
-        self.dict, self.list = self.get_attributes()
+        self.list_key, self.list = self.get_attributes()
 
     def get_attributes(self):
         cursors = self.collection.find({})
@@ -28,13 +28,9 @@ class BaseModel:
                 update=kwargs,
                 upsert=True, new=True
         )
-        # if flag["_id"] not in self.dict.keys():
-        if self.redis_accessor.exist(str(flag["_id"])):
+        if not self.redis_accessor.exist(str(flag["_id"])):
             kwargs["id"] = str(flag["_id"])
             self.redis_accessor.save(kwargs["id"], kwargs)
-            #TODO remove below
-            self.dict[flag["_id"]] = kwargs
-
             self.list.append(kwargs)
         return flag
 
@@ -42,23 +38,20 @@ class BaseModel:
         object_id = ObjectId(id)
         flag = self.collection.update_one({"_id" : object_id}, {"$set" : kwargs})
         if flag.modified_count:
-            self.redis_accessor.modify(id, kwargs)
-            #TODO remove below
-            self.dict[object_id].update(**kwargs)
-
-            index = list(self.dict.keys()).index(object_id)
+            self.redis_accessor.modify(id, **kwargs)
+            index = self.list_key.index(id)
             self.list[index].update(**kwargs)
 
     def parse(self, cursors):
-        dict_item = {}
+        list_key = []
         list_item = []
         for item in cursors:
             item["id"] = str(item["_id"])
-            self.redis_accessor.save(item["id"], item)
-            dict_item[item["_id"]] = item
+            list_key.append(item["id"])
             del item["_id"]
+            self.redis_accessor.save(item["id"], item)
             list_item.append(item)
-        return dict_item, list_item
+        return list_key, list_item
 
     def verify_qualified_item(self, **kwargs):
         existed_item = self.collection.find(kwargs).limit(1)

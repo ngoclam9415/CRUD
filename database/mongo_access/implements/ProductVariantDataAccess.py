@@ -18,22 +18,22 @@ class ProductVariantDataAccess(BaseDataAccess):
     def list_item(self, **kwargs):
         page = kwargs.get("page", 1)
         variants = self.collection.paginate(page, config.per_page)
-        variants = self.create_sqlalchemy_format(variants, self.product_col.dict, self.category_col.dict, self.brand_col.dict, self.store_col.dict, self.address_col.dict, self.district_col.dict, self.city_col.dict, self.color_col.dict)
+        variants = self.create_sqlalchemy_format(variants)
         res = {"total_pages" : self.collection.get_pages(config.per_page),
             "data" : variants}
         return res
         
 
-    def create_sqlalchemy_format(self, variants, product_dict, category_dict, brand_dict, store_dict, address_dict, district_dict, city_dict, color_dict):
+    def create_sqlalchemy_format(self, variants):
         for variant in variants:
-            this_product = product_dict.get(ObjectId(variant["product_id"]))
-            this_category = category_dict.get(ObjectId(this_product["category_id"]))
-            this_brand = brand_dict.get(ObjectId(this_category["brand_id"]))
-            this_store = store_dict.get(ObjectId(variant["store_id"]))
-            this_address = address_dict.get(ObjectId(this_store["address_id"]))
-            this_district = district_dict.get(ObjectId(this_address["district_id"]))
-            this_city = city_dict.get(ObjectId(this_district["city_id"]))
-            this_color = color_dict.get(ObjectId(variant["color_id"]))
+            this_product = self.collection.redis_accessor.load(variant["product_id"])
+            this_category = self.collection.redis_accessor.load(this_product["category_id"])
+            this_brand = self.collection.redis_accessor.load(this_category["brand_id"])
+            this_store = self.collection.redis_accessor.load(variant["store_id"])
+            this_address = self.collection.redis_accessor.load(this_store["address_id"])
+            this_district = self.collection.redis_accessor.load(this_address["district_id"])
+            this_city = self.collection.redis_accessor.load(this_district["city_id"])
+            this_color = self.collection.redis_accessor.load(variant["color_id"])
             this_product["category"] = this_category
             this_category["brand"] = this_brand
             this_store["address"] = this_address
@@ -46,17 +46,17 @@ class ProductVariantDataAccess(BaseDataAccess):
 
     def get_products(self):
         for product in self.product_col.list:
-            this_category = self.category_col.dict.get(ObjectId(product["category_id"]))
-            this_category["brand"] = self.brand_col.dict.get(ObjectId(this_category["brand_id"]))
+            this_category = self.collection.redis_accessor.load(product["category_id"])
+            this_category["brand"] = self.collection.redis_accessor.load(this_category["brand_id"])
             product["category"] = this_category
         return json.loads(json.dumps(self.product_col.list))
 
 
     def get_stores(self):
         for store in self.store_col.list:
-            this_address = self.address_col.dict.get(ObjectId(store["address_id"]))
-            this_district = self.district_col.dict.get(ObjectId(this_address["district_id"]))
-            this_city = self.city_col.dict.get(ObjectId(this_district["city_id"]))
+            this_address = self.collection.redis_accessor.load(store["address_id"])
+            this_district = self.collection.redis_accessor.load(this_address["district_id"])
+            this_city = self.collection.redis_accessor.load(this_district["city_id"])
             this_address["district"] = this_district
             this_district["city"] = this_city
             store["address"] = this_address

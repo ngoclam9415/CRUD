@@ -12,15 +12,15 @@ class DistrictDataAccess(BaseDataAccess):
     def list_item(self, **kwargs):
         page = kwargs.get("page", 1)
         districts = self.collection.paginate(page, config.per_page)
-        districts = self.create_sqlalchemy_format(districts, self.city_col.dict)
+        districts = self.create_sqlalchemy_format(districts)
         res = {"pages": self.collection.get_pages(config.per_page),
                 "cities" : self.city_col.list, 
                 "infos" : districts}
         return res
 
-    def create_sqlalchemy_format(self, districts, cities_dict):
+    def create_sqlalchemy_format(self, districts):
         for district in districts:
-            district["city"] = cities_dict.get(ObjectId(district["city_id"]))
+            district["city"] = self.collection.redis_accessor.load(district["city_id"])
         return json.loads(json.dumps(districts))
 
     def get_cities(self):

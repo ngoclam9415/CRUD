@@ -15,18 +15,18 @@ class StoreDataAccess(BaseDataAccess):
     def list_item(self, **kwargs):
         page = kwargs.get("page", 1)
         stores = self.collection.paginate(page, config.per_page)
-        stores = self.create_sqlalchemy_format(stores, self.address_col.dict, self.district_col.dict, self.city_col.dict)
+        stores = self.create_sqlalchemy_format(stores)
         res = {"total_pages": self.collection.get_pages(config.per_page),
                 "data" : stores}
         return res
 
-    def create_sqlalchemy_format(self, stores, addresses_dict, districts_dict, cities_dict):
+    def create_sqlalchemy_format(self, stores):
         for store in stores:
-            this_address = addresses_dict.get(ObjectId(store["address_id"]))
+            this_address = self.collection.redis_accessor.load(store["address_id"])
             store["address"] = this_address
-            this_district = districts_dict.get(ObjectId(this_address["district_id"]))
+            this_district = self.collection.redis_accessor.load(this_address["district_id"])
             this_address["district"] = this_district
-            this_district["city"] = cities_dict.get(ObjectId(this_district["city_id"]))
+            this_district["city"] = self.collection.redis_accessor.load(this_district["city_id"])
         return json.loads(json.dumps(stores))
 
     def get_cities(self):
@@ -37,9 +37,9 @@ class StoreDataAccess(BaseDataAccess):
 
     def get_addresses(self):
         for address in self.address_col.list:
-            this_district = self.district_col.dict.get(ObjectId(address["district_id"]))
+            this_district = self.collection.redis_accessor.load(address["district_id"])
             address["district"] = this_district
-            this_district["city"] = self.city_col.dict.get(ObjectId(this_district["city_id"]))
+            this_district["city"] = self.collection.redis_accessor.load(this_district["city_id"])
         return json.loads(json.dumps(self.address_col.list))
 
     def get_districts_by_city(self, **kwargs):

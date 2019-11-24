@@ -14,19 +14,18 @@ class AddressDataAccess(BaseDataAccess):
     def list_item(self, **kwargs):
         page = kwargs.get("page", 1)
         addresses = self.collection.paginate(page, config.per_page)
-        addresses = self.create_sqlalchemy_format(addresses, self.district_col.dict, self.city_col.dict)
+        addresses = self.create_sqlalchemy_format(addresses)
         res = {"total_page": self.collection.get_pages(config.per_page),
                 "addresses" : addresses}
         return res
 
-    def create_sqlalchemy_format(self, addresses, districts_dict, cities_dict):
+    def create_sqlalchemy_format(self, addresses):
         for address in addresses:
             this_district = self.collection.redis_accessor.load(address["district_id"])
-            # this_district = districts_dict.get(ObjectId(address["district_id"]))
             address["district_id"] = this_district["id"]
             address["district"] = this_district["name"]
-            address["city_id"] = cities_dict.get(ObjectId(this_district["city_id"]))["id"]
-            address["city"] = cities_dict.get(ObjectId(this_district["city_id"]))["name"]
+            address["city_id"] = self.collection.redis_accessor.load(this_district["city_id"])["id"]
+            address["city"] = self.collection.redis_accessor.load(this_district["city_id"])["name"]
         return json.loads(json.dumps(addresses))
 
     def get_cities(self):
