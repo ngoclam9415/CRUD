@@ -21,7 +21,8 @@ class AddressDataAccess(BaseDataAccess):
 
     def create_sqlalchemy_format(self, addresses, districts_dict, cities_dict):
         for address in addresses:
-            this_district = districts_dict.get(ObjectId(address["district_id"]))
+            this_district = self.collection.redis_accessor.load(address["district_id"])
+            # this_district = districts_dict.get(ObjectId(address["district_id"]))
             address["district_id"] = this_district["id"]
             address["district"] = this_district["name"]
             address["city_id"] = cities_dict.get(ObjectId(this_district["city_id"]))["id"]

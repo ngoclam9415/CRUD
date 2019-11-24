@@ -2,12 +2,16 @@ import pymongo
 from config import MongoDBConfig as config
 from bson.objectid import ObjectId
 import math
+from database.redis_access.redis_accessor import RedisAccessor
+import redis
+
 
 class BaseModel:
-    def __init__(self, collection="City"):
+    def __init__(self, collection="City", redis_accessor=None):
         self.mongodb = pymongo.MongoClient(host=config.IP, port=config.PORT)
         self.db = self.mongodb["product"]
         self.collection = self.add_collection(collection)
+        self.redis_accessor = redis_accessor
         self.dict, self.list = self.get_attributes()
 
     def get_attributes(self):
@@ -24,9 +28,13 @@ class BaseModel:
                 update=kwargs,
                 upsert=True, new=True
         )
-        if flag["_id"] not in self.dict.keys():
+        # if flag["_id"] not in self.dict.keys():
+        if self.redis_accessor.exist(str(flag["_id"])):
             kwargs["id"] = str(flag["_id"])
+            self.redis_accessor.save(kwargs["id"], kwargs)
+            #TODO remove below
             self.dict[flag["_id"]] = kwargs
+
             self.list.append(kwargs)
         return flag
 
@@ -34,8 +42,10 @@ class BaseModel:
         object_id = ObjectId(id)
         flag = self.collection.update_one({"_id" : object_id}, {"$set" : kwargs})
         if flag.modified_count:
-            print("change dict")
+            self.redis_accessor.modify(id, kwargs)
+            #TODO remove below
             self.dict[object_id].update(**kwargs)
+
             index = list(self.dict.keys()).index(object_id)
             self.list[index].update(**kwargs)
 
@@ -44,6 +54,7 @@ class BaseModel:
         list_item = []
         for item in cursors:
             item["id"] = str(item["_id"])
+            self.redis_accessor.save(item["id"], item)
             dict_item[item["_id"]] = item
             del item["_id"]
             list_item.append(item)
@@ -65,16 +76,16 @@ class BaseModel:
     
 
 class ModelSelector:
-    def __init__(self):
-        self.city_model = BaseModel("City")
-        self.district_model = BaseModel("District")
-        self.brand_model = BaseModel("Brand")
-        self.category_model = BaseModel("Category")
-        self.address_model = BaseModel("Address")
-        self.color_model = BaseModel("Color")
-        self.store_model = BaseModel("Store")
-        self.product_model = BaseModel("Product")
-        self.product_variant_model = BaseModel("Variant")
+    def __init__(self, redis_accessor):
+        self.city_model = BaseModel("City", redis_accessor)
+        self.district_model = BaseModel("District", redis_accessor)
+        self.brand_model = BaseModel("Brand", redis_accessor)
+        self.category_model = BaseModel("Category", redis_accessor)
+        self.address_model = BaseModel("Address", redis_accessor)
+        self.color_model = BaseModel("Color", redis_accessor)
+        self.store_model = BaseModel("Store", redis_accessor)
+        self.product_model = BaseModel("Product", redis_accessor)
+        self.product_variant_model = BaseModel("Variant", redis_accessor)
 
     def select(self, model_type):
         if model_type == "City":
@@ -99,7 +110,8 @@ class ModelSelector:
     def init_app(self, app):
         print("HELLO APP")
 
-db = ModelSelector()
+redis_accessor = RedisAccessor(redis.Redis())
+db = ModelSelector(redis_accessor)
 
         
 if __name__ == "__main__":

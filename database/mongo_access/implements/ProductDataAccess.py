@@ -29,5 +29,3 @@ class ProductDataAccess(BaseDataAccess):
             category["brand"] = self.brand_col.dict.get(ObjectId(category["brand_id"]))
         return json.loads(json.dumps(self.category_col.list))
     
-
-    
