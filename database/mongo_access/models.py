@@ -100,11 +100,18 @@ class BaseModel(BaseLogicModel):
         return flag
 
     def edit_search_item(self, id, **kwargs):
-        flag = self.search_collection.find_one_and_update({"id" : id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
+        flag = self.search_collection.find_one_and_update({"id" : id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.BEFORE)
         if flag is not None:
             self.redis_accessor.modify(id, **kwargs)
             index = self.list_id.index(id)
             self.list[index].update(**kwargs)
+
+            flag = dict(flag)
+            for key, value in kwargs.items():
+                old_value = flag.get(key, None)
+                if old_value is not None and old_value != value:
+                    self.search_collection.update_many({key : old_value},
+                                                        {"$set" : {key : value}})
         return flag
 
 class ModelSelector:
