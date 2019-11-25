@@ -26,3 +26,17 @@ class CategoryDataAccess(BaseDataAccess):
 
     def get_brands(self):
         return self.brand_col.list
+
+    def create_item(self, **kwargs):
+        result = super(CategoryDataAccess, self).create_item(**kwargs)
+        data = self.create_search_data(result)
+        self.collection.create_search_item(**data)
+
+    def edit_item(self, id, **kwargs):
+        result = super(CategoryDataAccess, self).edit_item(id, **kwargs)
+        data = self.create_search_data(result)
+        self.collection.edit_search_item(**data)
+
+    def create_search_data(self, result):
+        this_brand = self.collection.redis_accessor.load(result["brand_id"])
+        return {"category_name" : result["name"], "brand_name" : this_brand["name"], "id" : str(result["_id"]), "type" : "category"}

@@ -64,3 +64,28 @@ class ProductVariantDataAccess(BaseDataAccess):
 
     def get_colors(self):
         return json.loads(json.dumps(self.color_col.list))
+
+    def create_item(self, **kwargs):
+        result = super(ProductVariantDataAccess, self).create_item(**kwargs)
+        data = self.create_search_data(result)
+        self.collection.create_search_item(**data)
+
+    def edit_item(self, id, **kwargs):
+        result = super(ProductVariantDataAccess, self).edit_item(id, **kwargs)
+        data = self.create_search_data(result)
+        self.collection.edit_search_item(**data)
+
+    def create_search_data(self, result):
+        this_product = self.collection.redis_accessor.load(result["product_id"])
+        this_category = self.collection.redis_accessor.load(this_product["category_id"])
+        this_brand = self.collection.redis_accessor.load(this_category["brand_id"])
+        this_store = self.collection.redis_accessor.load(result["store_id"])
+        this_address = self.collection.redis_accessor.load(this_store["address_id"])
+        this_district = self.collection.redis_accessor.load(this_address["district_id"])
+        this_city = self.collection.redis_accessor.load(this_district["city_id"])
+        this_color = self.collection.redis_accessor.load(result["color_id"])
+        return {"variant_price" : result["price"], "product_name" : this_product["name"], 
+                "category_name" : this_category["name"], "brand_name" : this_brand["name"],
+                "store_name" : this_store["store_name"], "address_detail" : this_address["detail"],
+                "city_name" : this_city["name"], "color_value" : this_color["value"], "district_name" : this_district["name"],
+                "id" : str(result["_id"]), "type" : "variant"}

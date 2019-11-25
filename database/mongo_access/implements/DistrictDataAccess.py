@@ -25,3 +25,17 @@ class DistrictDataAccess(BaseDataAccess):
 
     def get_cities(self):
         return self.city_col.list
+
+    def create_item(self, **kwargs):
+        result = super(DistrictDataAccess, self).create_item(**kwargs)
+        data = self.create_search_data(result)
+        self.collection.create_search_item(**data)
+
+    def edit_item(self, id, **kwargs):
+        result = super(DistrictDataAccess, self).edit_item(id, **kwargs)
+        data = self.create_search_data(result)
+        self.collection.edit_search_item(**data)
+
+    def create_search_data(self, result):
+        this_city = self.collection.redis_accessor.load(result["city_id"])
+        return {"district_name" : result["name"], "city_name" : this_city["name"], "id" : str(result["_id"]), "type" : "district"}

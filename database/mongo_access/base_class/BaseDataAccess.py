@@ -8,10 +8,16 @@ class BaseDataAccess:
         self.collection = self.db.select(col_name)
 
     def create_item(self, **kwargs):
-        self.collection.create_item(**kwargs)
+        result = self.collection.create_item(**kwargs)
+        if result is not None:
+            return dict(result)
+        return result
 
     def edit_item(self, id, **kwargs):
-        self.collection.edit_item(id, **kwargs)
+        result = self.collection.edit_item(id, **kwargs)
+        if result is not None:
+            return dict(result)
+        return result
 
     def list_item(self, **kwargs):
         pass

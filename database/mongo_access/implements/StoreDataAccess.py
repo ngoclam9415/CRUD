@@ -45,3 +45,21 @@ class StoreDataAccess(BaseDataAccess):
     def get_districts_by_city(self, **kwargs):
         districts = self.district_col.collection.find(kwargs)
         return [{"id" : str(district["_id"]), "name" : district["name"]} for district in districts]
+
+    def create_item(self, **kwargs):
+        result = super(StoreDataAccess, self).create_item(**kwargs)
+        data = self.create_search_data(result)
+        self.collection.create_search_item(**data)
+
+    def edit_item(self, id, **kwargs):
+        result = super(StoreDataAccess, self).edit_item(id, **kwargs)
+        data = self.create_search_data(result)
+        self.collection.edit_search_item(**data)
+
+    def create_search_data(self, result):
+        this_address = self.collection.redis_accessor.load(result["address_id"])
+        this_district = self.collection.redis_accessor.load(this_address["district_id"])
+        this_city = self.collection.redis_accessor.load(this_district["city_id"])
+        return {"store_name" : result["store_name"], "address_detail" : this_address["detail"], 
+                "district_name" : this_district["name"], "city_name" : this_city["name"], 
+                "id" : str(result["_id"]), "type" : "store"}

@@ -12,3 +12,16 @@ class BrandDataAccess(BaseDataAccess):
         res = {"total_pages": self.collection.get_pages(config.per_page),
                 "data" : brands}
         return res
+
+    def create_item(self, **kwargs):
+        result = super(BrandDataAccess, self).create_item(**kwargs)
+        data = self.create_search_data(result)
+        self.collection.create_search_item(**data)
+
+    def edit_item(self, id, **kwargs):
+        result = super(BrandDataAccess, self).edit_item(id, **kwargs)
+        data = self.create_search_data(result)
+        self.collection.edit_search_item(**data)
+
+    def create_search_data(self, result):
+        return {"brand_name" : result["name"], "id" : str(result["_id"]), "type" : "brand"}

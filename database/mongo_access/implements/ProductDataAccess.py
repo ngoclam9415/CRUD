@@ -29,3 +29,17 @@ class ProductDataAccess(BaseDataAccess):
             category["brand"] = self.collection.redis_accessor.load(category["brand_id"])
         return json.loads(json.dumps(self.category_col.list))
     
+    def create_item(self, **kwargs):
+        result = super(ProductDataAccess, self).create_item(**kwargs)
+        data = self.create_search_data(result)
+        self.collection.create_search_item(**data)
+
+    def edit_item(self, id, **kwargs):
+        result = super(ProductDataAccess, self).edit_item(id, **kwargs)
+        data = self.create_search_data(result)
+        self.collection.edit_search_item(**data)
+
+    def create_search_data(self, result):
+        this_category = self.collection.redis_accessor.load(result["category_id"])
+        this_brand = self.collection.redis_accessor.load(this_category["brand_id"])
+        return {"product_name" : result["name"], "category_name" : this_category["name"], "brand_name" : this_brand["name"], "id" : str(result["_id"]), "type" : "product"}

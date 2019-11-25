@@ -6,13 +6,13 @@ from database.redis_access.redis_accessor import RedisAccessor
 import redis
 
 
-class BaseModel:
+class BaseLogicModel:
     def __init__(self, collection="City", redis_accessor=None):
         self.mongodb = pymongo.MongoClient(host=config.IP, port=config.PORT)
         self.db = self.mongodb["product"]
         self.collection = self.add_collection(collection)
         self.redis_accessor = redis_accessor
-        self.list_key, self.list = self.get_attributes()
+        self.list_id, self.list = self.get_attributes()
 
     def get_attributes(self):
         cursors = self.collection.find({})
@@ -36,22 +36,23 @@ class BaseModel:
 
     def edit_item(self, id, **kwargs):
         object_id = ObjectId(id)
-        flag = self.collection.update_one({"_id" : object_id}, {"$set" : kwargs})
-        if flag.modified_count:
+        flag = self.collection.find_one_and_update({"_id" : object_id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
+        if flag is not None:
             self.redis_accessor.modify(id, **kwargs)
-            index = self.list_key.index(id)
+            index = self.list_id.index(id)
             self.list[index].update(**kwargs)
+        return flag
 
     def parse(self, cursors):
-        list_key = []
+        list_id = []
         list_item = []
         for item in cursors:
             item["id"] = str(item["_id"])
-            list_key.append(item["id"])
+            list_id.append(item["id"])
             del item["_id"]
             self.redis_accessor.save(item["id"], item)
             list_item.append(item)
-        return list_key, list_item
+        return list_id, list_item
 
     def verify_qualified_item(self, **kwargs):
         existed_item = self.collection.find(kwargs).limit(1)
@@ -67,6 +68,35 @@ class BaseModel:
         return max(math.ceil(len(self.list)/per_page), 1)
 
     
+
+    
+
+
+
+class BaseModel(BaseLogicModel):
+    def __init__(self, collection="City", redis_accessor=None):
+        super(BaseModel, self).__init__(collection, redis_accessor)
+        self.search_collection = self.add_collection("Search")
+        self.create_indexes()
+
+    def create_indexes(self):
+        self.search_collection.create_index([("$**", pymongo.TEXT)])
+
+    def create_search_item(self, **kwargs):
+        flag = self.search_collection.find_and_modify(
+                query=kwargs,
+                update=kwargs,
+                upsert=True, new=True
+        )
+        return flag
+
+    def edit_search_item(self, id, **kwargs):
+        flag = self.search_collection.find_one_and_update({"id" : id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
+        if flag is not None:
+            self.redis_accessor.modify(id, **kwargs)
+            index = self.list_id.index(id)
+            self.list[index].update(**kwargs)
+        return flag
 
 class ModelSelector:
     def __init__(self, redis_accessor):

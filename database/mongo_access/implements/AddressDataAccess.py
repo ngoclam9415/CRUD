@@ -19,6 +19,21 @@ class AddressDataAccess(BaseDataAccess):
                 "addresses" : addresses}
         return res
 
+    def create_item(self, **kwargs):
+        result = super(AddressDataAccess, self).create_item(**kwargs)
+        data = self.create_search_data(result)
+        self.collection.create_search_item(**data)
+
+    def edit_item(self, id, **kwargs):
+        result = super(AddressDataAccess, self).edit_item(id, **kwargs)
+        data = self.create_search_data(result)
+        self.collection.edit_search_item(**data)
+
+    def create_search_data(self, result):
+        this_district = self.collection.redis_accessor.load(result["district_id"])
+        this_city = self.collection.redis_accessor.load(this_district["city_id"])
+        return {"address_detail" : result["detail"], "district_name" : this_district["name"], "city_name" : this_city["name"], "id" : str(result["_id"]), "type" : "address"}
+
     def create_sqlalchemy_format(self, addresses):
         for address in addresses:
             this_district = self.collection.redis_accessor.load(address["district_id"])
