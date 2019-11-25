@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="main-content-container container-fluid px-4">
+        <!-- Page Header -->
+
+
+    <!-- CITY -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">City Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">City Name</th>
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for city in cities %}
+                <tr>
+                    <td>{{city["_id"]}}</td>
+                    <td>{{city["city_name"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- DISTRICT -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">District Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">District Name</th>
+                    <th scope="col" class="border-0">City Name</th>
+
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for district in districts %}
+                <tr>
+                    <td>{{district["_id"]}}</td>
+                    <td>{{district["district_name"]}}</td>
+                    <td>{{district["city_name"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ADDRESS -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Address Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">Address Name</th>
+                    <th scope="col" class="border-0">District Name</th>
+                    <th scope="col" class="border-0">City Name</th>
+
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for address in addresses %}
+                    <tr>
+                        <td>{{address["_id"]}}</td>
+                        <td>{{address["address_detail"]}}</td>
+                        <td>{{address["district_name"]}}</td>
+                        <td>{{address["city_name"]}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- STORE -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Store Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered " id="store_table">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">Store Name</th>
+                    <th scope="col" class="border-0">Address Name</th>
+                    <th scope="col" class="border-0">District Name</th>
+                    <th scope="col" class="border-0">City Name</th>
+
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for store in stores %}
+                <tr>
+                    <td>{{store["_id"]}}</td>
+                    <td>{{store["store_name"]}}</td>
+                    <td>{{store["address_detail"]}}</td>
+                    <td>{{store["district_name"]}}</td>
+                    <td>{{store["city_name"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- COLOR -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Color Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">Color Value</th>
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for color in colors %}
+                <tr>
+                    <td>{{color["_id"]}}</td>
+                    <td>{{color["color_value"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- BRAND -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Brand Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">Brand Name</th>
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for brand in brands %}
+                <tr>
+                    <td>{{brand["_id"]}}</td>
+                    <td>{{brand["name"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CATEGORY -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Category Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">Category Name</th>
+                    <th scope="col" class="border-0">Brand Name</th>
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for category in categories %}
+                <tr>
+                    <td>{{category["_id"]}}</td>
+                    <td>{{category["name"]}}</td>
+                    <td>{{category["brand_name"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CATEGORY -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Category Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">Category Name</th>
+                    <th scope="col" class="border-0">Brand Name</th>
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for category in categories %}
+                <tr>
+                    <td>{{category["_id"]}}</td>
+                    <td>{{category["name"]}}</td>
+                    <td>{{category["brand_name"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- CATEGORY -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Category Tables</h3>
+        </div>
+    </div>
+        <!-- End Page Header -->
+        <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">Id</th>
+                    <th scope="col" class="border-0">Product Name</th>
+                    <th scope="col" class="border-0">Category Name</th>
+                    <th scope="col" class="border-0">Brand Name</th>
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for product in products %}
+                <tr>
+                    <td>{{product["_id"]}}</td>
+                    <td>{{product["name"]}}</td>
+                    <td>{{product["category_name"]}}</td>
+                    <td>{{product["brand_name"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- VARIANT -->
+    <div class="page-header row no-gutters py-4">
+        <div class="col-12 col-sm-4 text-center text-sm-left mb-0">
+            <h3 class="page-title">Variant Tables</h3>
+        </div>
+    </div>
+    <!-- End Page Header -->
+    <!-- Default Light Table -->
+    <div class="container">
+        <table class="table mb-0 table-bordered">
+            <thead class="bg-light">
+                <tr>
+                    <th scope="col" class="border-0">id</th>
+                    <th scope="col" class="border-0">Product Name</th>
+                    <th scope="col" class="border-0">Color</th>
+                    <th scope="col" class="border-0">Store</th>
+                    <th scope="col" class="border-0">Price</th>
+                </tr>
+            </thead>
+            <tbody id="body-cmt">
+                {% for variant in variants %}
+                <tr>
+                    <td>{{variant["_id"]}}</td>
+                    <td>{{variant["product_name"]}}, {{variant["category_name"]}}, {{variant["brand_name"]}}</td>
+                    <td>{{variant["color_value"]}}</td>
+                    <td>{{variant["store_name"]}} : {{variant["address_detail"]}}, {{variant["district_name"]}}, {{variant["city_name"]}}</td>
+                    <td>{{variant["variant_price"]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- HET ROI -->
+
+
+    <div class="container">
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-end" id="pagination"></ul>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block addition %}
+<script src="{{ url_for('static', filename='variant/variant.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery.twbsPagination.js') }}"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+<script>$(document).ready(function () {
+        $('table').DataTable();
+        $('.dataTables_length').addClass('bs-select');
+      });</script>
+<!-- <script>
+    $('#pagination').twbsPagination({
+        startPage: 1,
+        totalPages: {{ pages }},
+        pageVariable: 'page',
+        visiblePages: 2,
+        href: true,
+        defaultHref: '?page=',
+    });
+</script> -->
+{% endblock %}

@@ -67,6 +67,18 @@ class BaseLogicModel:
     def get_pages(self, per_page):
         return max(math.ceil(len(self.list)/per_page), 1)
 
+    def create_indexes(self):
+        self.collection.create_index([("$**", pymongo.TEXT)])
+
+    def show_searched_item(self, text):
+        cursors = self.collection.aggregate([
+                                    {"$match" : {"$text" : {"$search" : text}}},
+                                    {"$group" : {"_id" : "$type", "data" : {"$push" : "$$ROOT"}}},
+                                    ])
+        return_dict = {}
+        for cursor in cursors:
+            return_dict[cursor["_id"]] = cursor["data"]
+        return return_dict
     
 
     
@@ -74,13 +86,10 @@ class BaseLogicModel:
 
 
 class BaseModel(BaseLogicModel):
-    def __init__(self, collection="City", redis_accessor=None):
+    def __init__(self, collection="City", redis_accessor=None, search_collection=None):
         super(BaseModel, self).__init__(collection, redis_accessor)
-        self.search_collection = self.add_collection("Search")
-        self.create_indexes()
-
-    def create_indexes(self):
-        self.search_collection.create_index([("$**", pymongo.TEXT)])
+        self.search_collection = search_collection
+    
 
     def create_search_item(self, **kwargs):
         flag = self.search_collection.find_and_modify(
@@ -100,15 +109,17 @@ class BaseModel(BaseLogicModel):
 
 class ModelSelector:
     def __init__(self, redis_accessor):
-        self.city_model = BaseModel("City", redis_accessor)
-        self.district_model = BaseModel("District", redis_accessor)
-        self.brand_model = BaseModel("Brand", redis_accessor)
-        self.category_model = BaseModel("Category", redis_accessor)
-        self.address_model = BaseModel("Address", redis_accessor)
-        self.color_model = BaseModel("Color", redis_accessor)
-        self.store_model = BaseModel("Store", redis_accessor)
-        self.product_model = BaseModel("Product", redis_accessor)
-        self.product_variant_model = BaseModel("Variant", redis_accessor)
+        self.search_model = BaseLogicModel("Search", redis_accessor)
+        self.search_model.create_indexes()
+        self.city_model = BaseModel("City", redis_accessor, self.search_model.collection)
+        self.district_model = BaseModel("District", redis_accessor, self.search_model.collection)
+        self.brand_model = BaseModel("Brand", redis_accessor, self.search_model.collection)
+        self.category_model = BaseModel("Category", redis_accessor, self.search_model.collection)
+        self.address_model = BaseModel("Address", redis_accessor, self.search_model.collection)
+        self.color_model = BaseModel("Color", redis_accessor, self.search_model.collection)
+        self.store_model = BaseModel("Store", redis_accessor, self.search_model.collection)
+        self.product_model = BaseModel("Product", redis_accessor, self.search_model.collection)
+        self.product_variant_model = BaseModel("Variant", redis_accessor, self.search_model.collection)
 
     def select(self, model_type):
         if model_type == "City":
@@ -129,6 +140,8 @@ class ModelSelector:
             return self.product_model
         elif model_type == "Variant":
             return self.product_variant_model
+        elif model_type == "Search":
+            return self.search_model
             
     def init_app(self, app):
         print("HELLO APP")

@@ -8,14 +8,16 @@ class RedisAccessor:
         #TODO FINISH THIS
 
     def save(self, key, dict_data):
-        serialized_data = json.dumps(dict_data)
+        serialized_data = pickle.dumps(dict_data)
         flag = self.redis_cli.set(key, serialized_data)
         return flag
 
     def load(self, key):
         serialized_data = self.redis_cli.get(key)
-        serialized_data = serialized_data.decode()
-        dict_data = json.loads(serialized_data)
+        if serialized_data is None:
+            return None
+        # serialized_data = serialized_data.decode()
+        dict_data = pickle.loads(serialized_data)
         return dict_data
 
     def modify(self, key, **kwargs):

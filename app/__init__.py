@@ -21,6 +21,7 @@ def create_app(config_name):
     from app.CRUD.product.views import product_blueprint
     from app.CRUD.brand.views import brand_blueprint
     from app.CRUD.product_variant.views import variant_blueprint
+    from app.CRUD.search.views import search_blueprint
 
     app.register_blueprint(city_blueprint, url_prefix='/city')
     app.register_blueprint(district_blueprint, url_prefix='/district')
@@ -30,6 +31,7 @@ def create_app(config_name):
     app.register_blueprint(address_blueprint, url_prefix='/address')
     app.register_blueprint(product_blueprint, url_prefix='/product')
     app.register_blueprint(brand_blueprint, url_prefix='/brand')
-    app.register_blueprint(variant_blueprint, url_prefix='/variants')
+    app.register_blueprint(variant_blueprint, url_prefix='/variant')
+    app.register_blueprint(search_blueprint, url_prefix='/search')
 
     return app

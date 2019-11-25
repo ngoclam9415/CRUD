@@ -4,7 +4,7 @@ import json
 
 
 def create_data(parent_col, child_col, added_field, json_file):
-    parent_list = access_factory.get_access(parent_col).collection.list
+    parent_list = access_factory.get_access(parent_col).model.list
     child_list = access_factory.get_access(child_col)
     with open(json_file, 'r') as f:
         list_json = json.load(f)
@@ -23,9 +23,9 @@ def create_no_relation_data(col, json_file):
             print("{}/ Insert : {}".format(i, json_item))
 
 def create_variant():
-    products = access_factory.get_access("product").collection.list
-    stores = access_factory.get_access("store").collection.list
-    colors = access_factory.get_access("color").collection.list
+    products = access_factory.get_access("product").model.list
+    stores = access_factory.get_access("store").model.list
+    colors = access_factory.get_access("color").model.list
     variants = access_factory.get_access("variant")
     for i in range(1500):
         this_dict = {}

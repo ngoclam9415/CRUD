@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, make_response, jsonify, redirect, url_for, flash
-from database.mysql_access.models import db
 from database import access_factory
 
 category_blueprint = Blueprint('category', __name__, template_folder='templates')

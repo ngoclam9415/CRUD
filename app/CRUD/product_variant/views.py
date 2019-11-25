@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for, flash
-from database.mysql_access.models import db
 from database import access_factory
 
 variant_blueprint = Blueprint(

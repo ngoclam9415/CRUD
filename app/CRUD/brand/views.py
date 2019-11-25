@@ -1,7 +1,5 @@
 from flask import Blueprint, render_template, request, make_response, jsonify, redirect, flash
 
-from database.mysql_access.models import db
-from database.mysql_access.models import Brand
 from database import access_factory
 
 brand_blueprint = Blueprint('brand', __name__, template_folder='templates')

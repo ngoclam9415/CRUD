@@ -1,6 +1,4 @@
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
-from database.mysql_access.models import District, City, Address
-from database.mysql_access.models import db
 from database import access_factory
 
 address_blueprint = Blueprint('address', __name__, template_folder='templates')
