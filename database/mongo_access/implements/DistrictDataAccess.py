@@ -5,23 +5,37 @@ import math
 import json
 
 class DistrictDataAccess(BaseDataAccess):
-    def __init__(self, db, col_name, city_col_name):
+    def __init__(self, db, col_name, city_model_name):
         super(DistrictDataAccess, self).__init__(db, col_name)
-        self.city_col = db.select(city_col_name)
+        self.city_model = db.select(city_model_name)
 
     def list_item(self, **kwargs):
         page = kwargs.get("page", 1)
-        districts = self.collection.paginate(page, config.per_page)
-        districts = self.create_sqlalchemy_format(districts, self.city_col.dict)
-        res = {"pages": self.collection.get_pages(config.per_page),
-                "cities" : self.city_col.list, 
+        districts = self.model.paginate(page, config.per_page)
+        districts = self.create_sqlalchemy_format(districts)
+        res = {"pages": self.model.get_pages(config.per_page),
+                "cities" : self.city_model.list, 
                 "infos" : districts}
         return res
 
-    def create_sqlalchemy_format(self, districts, cities_dict):
+    def create_sqlalchemy_format(self, districts):
         for district in districts:
-            district["city"] = cities_dict.get(ObjectId(district["city_id"]))
+            district["city"] = self.model.redis_accessor.load(district["city_id"])
         return json.loads(json.dumps(districts))
 
     def get_cities(self):
-        return self.city_col.list
+        return self.city_model.list
+
+    def create_item(self, **kwargs):
+        result = super(DistrictDataAccess, self).create_item(**kwargs)
+        data = self.create_search_data(result)
+        self.model.create_search_item(**data)
+
+    def edit_item(self, id, **kwargs):
+        result = super(DistrictDataAccess, self).edit_item(id, **kwargs)
+        data = self.create_search_data(result)
+        self.model.edit_search_item(**data)
+
+    def create_search_data(self, result):
+        this_city = self.model.redis_accessor.load(result["city_id"])
+        return {"district_name" : result["name"], "city_name" : this_city["name"], "id" : str(result["_id"]), "type" : "district"}

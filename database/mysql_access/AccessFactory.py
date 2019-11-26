@@ -7,7 +7,10 @@ from database.mysql_access.implements.AddressDataAccess import AddressDataAccess
 from database.mysql_access.implements.StoreDataAccess import StoreDataAccess
 from database.mysql_access.implements.ProductDataAccess import ProductDataAccess
 from database.mysql_access.implements.ProductVariantDataAccess import ProductVariantDataAccess
+from database.mysql_access.implements.SearchDataAccess import SearchDataAccess
 from database.mysql_access.models import db, City, District, Brand, Category, Address, Color, Store, Product, ProductVariant
+from sqlalchemy.orm import sessionmaker
+
 
 class AccessFactory:
     def __init__(self):
@@ -21,6 +24,8 @@ class AccessFactory:
         self.store_access = StoreDataAccess(self.db, Store, Address)
         self.product_access = ProductDataAccess(self.db, Product, Category)
         self.product_variant_access = ProductVariantDataAccess(self.db, ProductVariant, Product, Store, Color)
+        self.search_access = SearchDataAccess(self.db, ProductVariant, Product, Category, Brand, Store, Address, District, City, Color)
+
 
     def get_access(self, access_type):
         if access_type == "city":
@@ -41,6 +46,8 @@ class AccessFactory:
             return self.product_access
         elif access_type == "variant":
             return self.product_variant_access
+        elif access_type == "search":
+            return self.search_access
 
 
     def init_app(self, app):

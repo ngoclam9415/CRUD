@@ -2,13 +2,17 @@ import pymongo
 from config import MongoDBConfig as config
 from bson.objectid import ObjectId
 import math
+from database.redis_access.redis_accessor import RedisAccessor
+import redis
 
-class BaseModel:
-    def __init__(self, collection="City"):
+
+class BaseLogicModel:
+    def __init__(self, collection="City", redis_accessor=None):
         self.mongodb = pymongo.MongoClient(host=config.IP, port=config.PORT)
         self.db = self.mongodb["product"]
         self.collection = self.add_collection(collection)
-        self.dict, self.list = self.get_attributes()
+        self.redis_accessor = redis_accessor
+        self.list_id, self.list = self.get_attributes()
 
     def get_attributes(self):
         cursors = self.collection.find({})
@@ -22,32 +26,33 @@ class BaseModel:
         flag = self.collection.find_and_modify(
                 query=kwargs,
                 update=kwargs,
-                upsert=True, new=True, fields={"_id" : 1}
+                upsert=True, new=True
         )
-        if flag["_id"] not in self.dict.keys():
+        if not self.redis_accessor.exist(str(flag["_id"])):
             kwargs["id"] = str(flag["_id"])
-            self.dict[flag["_id"]] = kwargs
+            self.redis_accessor.save(kwargs["id"], kwargs)
             self.list.append(kwargs)
         return flag
 
     def edit_item(self, id, **kwargs):
         object_id = ObjectId(id)
-        flag = self.collection.update_one({"_id" : object_id}, {"$set" : kwargs})
-        if flag.modified_count:
-            print("change dict")
-            self.dict[object_id].update(**kwargs)
-            index = list(self.dict.keys()).index(object_id)
+        flag = self.collection.find_one_and_update({"_id" : object_id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
+        if flag is not None:
+            self.redis_accessor.modify(id, **kwargs)
+            index = self.list_id.index(id)
             self.list[index].update(**kwargs)
+        return flag
 
     def parse(self, cursors):
-        dict_item = {}
+        list_id = []
         list_item = []
         for item in cursors:
             item["id"] = str(item["_id"])
-            dict_item[item["_id"]] = item
+            list_id.append(item["id"])
             del item["_id"]
+            self.redis_accessor.save(item["id"], item)
             list_item.append(item)
-        return dict_item, list_item
+        return list_id, list_item
 
     def verify_qualified_item(self, **kwargs):
         existed_item = self.collection.find(kwargs).limit(1)
@@ -62,19 +67,66 @@ class BaseModel:
     def get_pages(self, per_page):
         return max(math.ceil(len(self.list)/per_page), 1)
 
+    def create_indexes(self):
+        self.collection.create_index([("$**", pymongo.TEXT)])
+
+    def show_searched_item(self, text):
+        cursors = self.collection.aggregate([
+                                    {"$match" : {"$text" : {"$search" : text}}},
+                                    {"$group" : {"_id" : "$type", "data" : {"$push" : "$$ROOT"}}},
+                                    ])
+        return_dict = {}
+        for cursor in cursors:
+            return_dict[cursor["_id"]] = cursor["data"]
+        return return_dict
     
 
+    
+
+
+
+class BaseModel(BaseLogicModel):
+    def __init__(self, collection="City", redis_accessor=None, search_collection=None):
+        super(BaseModel, self).__init__(collection, redis_accessor)
+        self.search_collection = search_collection
+    
+
+    def create_search_item(self, **kwargs):
+        flag = self.search_collection.find_and_modify(
+                query=kwargs,
+                update=kwargs,
+                upsert=True, new=True
+        )
+        return flag
+
+    def edit_search_item(self, id, **kwargs):
+        flag = self.search_collection.find_one_and_update({"id" : id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.BEFORE)
+        if flag is not None:
+            self.redis_accessor.modify(id, **kwargs)
+            index = self.list_id.index(id)
+            self.list[index].update(**kwargs)
+
+            flag = dict(flag)
+            for key, value in kwargs.items():
+                old_value = flag.get(key, None)
+                if old_value is not None and old_value != value:
+                    self.search_collection.update_many({key : old_value},
+                                                        {"$set" : {key : value}})
+        return flag
+
 class ModelSelector:
-    def __init__(self):
-        self.city_model = BaseModel("City")
-        self.district_model = BaseModel("District")
-        self.brand_model = BaseModel("Brand")
-        self.category_model = BaseModel("Category")
-        self.address_model = BaseModel("Address")
-        self.color_model = BaseModel("Color")
-        self.store_model = BaseModel("Store")
-        self.product_model = BaseModel("Product")
-        self.product_variant_model = BaseModel("Variant")
+    def __init__(self, redis_accessor):
+        self.search_model = BaseLogicModel("Search", redis_accessor)
+        self.search_model.create_indexes()
+        self.city_model = BaseModel("City", redis_accessor, self.search_model.collection)
+        self.district_model = BaseModel("District", redis_accessor, self.search_model.collection)
+        self.brand_model = BaseModel("Brand", redis_accessor, self.search_model.collection)
+        self.category_model = BaseModel("Category", redis_accessor, self.search_model.collection)
+        self.address_model = BaseModel("Address", redis_accessor, self.search_model.collection)
+        self.color_model = BaseModel("Color", redis_accessor, self.search_model.collection)
+        self.store_model = BaseModel("Store", redis_accessor, self.search_model.collection)
+        self.product_model = BaseModel("Product", redis_accessor, self.search_model.collection)
+        self.product_variant_model = BaseModel("Variant", redis_accessor, self.search_model.collection)
 
     def select(self, model_type):
         if model_type == "City":
@@ -95,11 +147,14 @@ class ModelSelector:
             return self.product_model
         elif model_type == "Variant":
             return self.product_variant_model
+        elif model_type == "Search":
+            return self.search_model
             
     def init_app(self, app):
         print("HELLO APP")
 
-db = ModelSelector()
+redis_accessor = RedisAccessor(redis.Redis())
+db = ModelSelector(redis_accessor)
 
         
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ $(".btn.btn-info").on("click", function(){
 
 $('form').find("input").keyup(function() {
     var empty = false;
-    $('form').find("input").each(function() {
+    $('form').find("input").not($("#search")).each(function() {
         if ($(this).val() == '') {
             console.log($(this))
             empty = true;
@@ -24,7 +24,7 @@ $('form').find("input").keyup(function() {
 
 $('select').change(function() {
     var empty = false;
-    $('form').find("input").each(function() {
+    $('form').find("input").not($("#search")).each(function() {
         if ($(this).val() == '') {
             console.log($(this))
             empty = true;

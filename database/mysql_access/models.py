@@ -1,16 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
-
+from sqlalchemy_fulltext import FullText, FullTextSearch
 db = SQLAlchemy()
 
-class City(db.Model):
+class City(FullText, db.Model):
     __tablename__ = 'city'
     __table_args__ = {'extend_existing': True}
-
+    __fulltext_columns__ = ("name", )
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), unique=True)
     district = db.relationship(
         "District", backref='city', lazy="dynamic")
-
     # def __init__(self, name):
     #     self.name = name
 
@@ -18,9 +17,11 @@ class City(db.Model):
         return '<City %r>' % self.name
 
 
-class District(db.Model):
+class District(FullText, db.Model):
     __tablename__ = "district"
     __table_args__ = {'extend_existing': True}
+    __fulltext_columns__ = ("name",)
+
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50))
@@ -31,9 +32,11 @@ class District(db.Model):
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'))
 
 
-class Address(db.Model):
+class Address(FullText, db.Model):
     __tablename__ = "address"
     __table_args__ = {'extend_existing': True}
+    __fulltext_columns__ = ("detail",)
+
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     detail = db.Column(db.String(50))
@@ -42,9 +45,11 @@ class Address(db.Model):
         "Store", backref='address', lazy="dynamic")
 
 
-class Color(db.Model):
+class Color(FullText, db.Model):
     __tablename__ = "color"
     __table_args__ = {'extend_existing': True}
+    __fulltext_columns__ = ("value",)
+
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     value = db.Column(db.String(50), unique=True)
@@ -52,9 +57,10 @@ class Color(db.Model):
         "ProductVariant", backref='color', lazy="dynamic")
 
 
-class Brand(db.Model):
+class Brand(FullText, db.Model):
     __tablename__ = "brand"
     __table_args__ = {'extend_existing': True}
+    __fulltext_columns__ = ("name",)
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50))
@@ -62,9 +68,10 @@ class Brand(db.Model):
         "Category", backref='brand', lazy="dynamic")
 
 
-class Category(db.Model):
+class Category(FullText, db.Model):
     __tablename__ = "category"
     __table_args__ = {'extend_existing': True}
+    __fulltext_columns__ = ("name",)
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50))
@@ -73,9 +80,11 @@ class Category(db.Model):
         "Product", backref='category', lazy="dynamic")
 
 
-class Store(db.Model):
+class Store(FullText, db.Model):
     __tablename__ = "store"
     __table_args__ = {'extend_existing': True}
+    __fulltext_columns__ = ("store_name",)
+
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     address_id = db.Column(db.Integer, db.ForeignKey('address.id'))
@@ -85,9 +94,10 @@ class Store(db.Model):
         "ProductVariant", backref='store', lazy="dynamic")
 
 
-class Product(db.Model):
+class Product(FullText, db.Model):
     __tablename__ = "product"
     __table_args__ = {'extend_existing': True}
+    __fulltext_columns__ = ("name",)
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50))
@@ -97,12 +107,22 @@ class Product(db.Model):
         "ProductVariant", backref='product', lazy="dynamic")
 
 
-class ProductVariant(db.Model):
+class ProductVariant(FullText, db.Model):
     __tablename__ = "product_variant"
     __table_args__ = {'extend_existing': True}
+    __fulltext_columns__ = ("price",)
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     price = db.Column(db.BigInteger)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     store_id = db.Column(db.Integer, db.ForeignKey('store.id'))
     color_id = db.Column(db.Integer, db.ForeignKey('color.id'))
+
+if __name__ == "__main__":
+    from sqlalchemy.orm import sessionmaker
+    from sqlalchemy_searchable import search
+    from flask import Flask
+    from app import create_app
+    app =create_app("default")
+    result = City.query.filter(FullTextSearch('Ho', City))
+    print(result)
