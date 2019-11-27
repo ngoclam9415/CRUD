@@ -107,11 +107,15 @@ class BaseModel(BaseLogicModel):
             self.list[index].update(**kwargs)
 
             flag = dict(flag)
+            old_fields = {}
+            update_fields = {}
             for key, value in kwargs.items():
                 old_value = flag.get(key, None)
-                if old_value is not None and old_value != value:
-                    self.search_collection.update_many({key : old_value},
-                                                        {"$set" : {key : value}})
+                if old_value is not None and old_value != value and key not in ["_id", "id", "type"]:
+                    update_fields[key] = value
+                    old_fields[key] = old_value
+            self.search_collection.update_many(old_fields,
+                                                {"$set" : update_fields})
         return flag
 
 class ModelSelector:
