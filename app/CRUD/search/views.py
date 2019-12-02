@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for, flash
 from database import access_factory
+from unidecode import unidecode
 
 search_blueprint = Blueprint(
     'search', __name__, template_folder='templates')
@@ -10,7 +11,9 @@ def index():
     search_info = request.values.get("search", None)
     data = {}
     if search_info != "" and search_info is not None:
+        search_info = unidecode(search_info).lower()
         data = access_factory.get_access("search").show_searched_item(search_info)
+        print(data)
     return render_template("CRUD/search/search.html", 
                     cities=data.get("city", []),
                     districts=data.get("district", []),

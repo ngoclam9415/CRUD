@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, make_response, jsonify, redirect, url_for, flash
 from database import access_factory
-
+from unidecode import unidecode
 category_blueprint = Blueprint('category', __name__, template_folder='templates')
 
 
@@ -26,7 +26,8 @@ def create_category(error=None):
         category_name = request.form['category_name']
         brand_id = request.form['brand_id']
         if category_name != "" and access_factory.get_access("category").verify_qualified_item(name=category_name, brand_id=brand_id) :
-            access_factory.get_access("category").create_item(name=category_name, brand_id=brand_id)
+            no_accent = unidecode(category_name)
+            access_factory.get_access("category").create_item(name=category_name, brand_id=brand_id, no_accent=no_accent.lower())
             return redirect('/category')
         else:
             error = "Your category is error"
@@ -39,7 +40,8 @@ def edit_category():
     category_name = request.form['category_name']
     brand_id = request.form.get('brand_id', type=int)
     if category_name != "" and access_factory.get_access("category").verify_qualified_item(name=category_name, brand_id=brand_id):
-        access_factory.get_access("category").edit_item(category_id, name=category_name, brand_id=brand_id)
+        no_accent = unidecode(category_name)
+        access_factory.get_access("category").edit_item(category_id, name=category_name, brand_id=brand_id, no_accent=no_accent.lower())
     else:
         flash("EDIT INPUT INVALID", "error")
         return redirect('/category')

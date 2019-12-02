@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
 from database import access_factory
+from unidecode import unidecode
 
 address_blueprint = Blueprint('address', __name__, template_folder='templates')
 
@@ -12,7 +13,8 @@ def create_address():
         if not district_id or not detail or not access_factory.get_access("address").verify_qualified_item(district_id=district_id,  detail=detail):
             flash('Vui lòng nhập lại thông tin', 'error')
             return redirect(url_for('address.create_address'))
-        access_factory.get_access("address").create_item(district_id=district_id,  detail=detail)
+        no_accent = unidecode(detail)
+        access_factory.get_access("address").create_item(district_id=district_id,  detail=detail, no_accent=no_accent.lower())
         return redirect(url_for('address.list_addresses'))
     list_city = access_factory.get_access("address").get_cities()
     return render_template('CRUD/address/create.html', list_city=list_city, address_active="active")
@@ -42,5 +44,6 @@ def edit_address():
     district_id = new_address_info.get('district_id')
     detail = new_address_info.get('address_detail')
     if detail != "" and access_factory.get_access("address").verify_qualified_item(district_id=district_id, detail=detail):
-        access_factory.get_access("address").edit_item(address_id, district_id=district_id, detail=detail)
+        no_accent = unidecode(detail)
+        access_factory.get_access("address").edit_item(address_id, district_id=district_id, detail=detail, no_accent=no_accent.lower())
     return jsonify({"status": "ok"})

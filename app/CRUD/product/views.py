@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, make_response, jsonify, redirect, flash
-
+from unidecode import unidecode
 from database import access_factory
 product_blueprint = Blueprint('product', __name__, template_folder='templates')
 
@@ -19,7 +19,8 @@ def create_product(error=None):
         product_name = request.form['product_name']
         category_id = request.form['category_id']
         if product_name != "" and access_factory.get_access("product").verify_qualified_item(name=product_name, category_id=category_id):
-            access_factory.get_access("product").create_item(name=product_name, category_id=category_id)
+            no_accent = unidecode(product_name)
+            access_factory.get_access("product").create_item(name=product_name, category_id=category_id, no_accent=no_accent.lower())
         else:
             flash("PRODUCT INPUT INVALID", "error")
         return redirect('/product')
@@ -32,7 +33,8 @@ def edit_product():
     product_name = request.form.get('product_name', None)
     category_id = request.form.get('category_id', None)
     if product_name != "" and access_factory.get_access("product").verify_qualified_item(name=product_name, category_id=category_id):
-        access_factory.get_access("product").edit_item(product_id, name=product_name, category_id=category_id)
+        no_accent = unidecode(product_name)
+        access_factory.get_access("product").edit_item(product_id, name=product_name, category_id=category_id, no_accent=no_accent.lower())
     else:
         flash("PRODUCT INPUT INVALID", "error")
     return redirect('/product')

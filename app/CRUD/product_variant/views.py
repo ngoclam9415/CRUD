@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for, flash
 from database import access_factory
+from unidecode import unidecode
 
 variant_blueprint = Blueprint(
     'variant', __name__, template_folder='templates')
@@ -7,7 +8,6 @@ variant_blueprint = Blueprint(
 
 @variant_blueprint.route('/', methods=['GET'])
 def index():
-
     page = request.args.get("page", 1, type=int)
     stores = access_factory.get_access("variant").get_stores()
     products = access_factory.get_access("variant").get_products()
@@ -41,7 +41,6 @@ def api_edit():
 
     if product_id is None or store_id is None or id is None or color_id is None or not access_factory.get_access("variant").verify_qualified_item(price=price, product_id=product_id, store_id=store_id, color_id=color_id):
         return jsonify({"sucess": False, "data": None})
-
     access_factory.get_access("variant").edit_item(id, price=price, product_id=product_id, store_id=store_id, color_id=color_id)
     return jsonify({"sucess": True})
 

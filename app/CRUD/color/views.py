@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for, flash
 from database import access_factory
+from unidecode import unidecode
 
 color_blueprint = Blueprint(
     'color', __name__, template_folder='templates')
@@ -19,7 +20,8 @@ def api_create():
     if color_value is None or color_value == "" or not access_factory.get_access("color").verify_qualified_item(value=color_value):
         flash("INPUT COLOR ERROR", "error")
         return redirect(url_for("color.color"))
-    access_factory.get_access("color").create_item(value=color_value)
+    no_accent = unidecode(color_value)
+    access_factory.get_access("color").create_item(value=color_value, no_accent=no_accent.lower())
     return redirect(url_for("color.color"))
 
 
@@ -30,7 +32,8 @@ def edit_district():
     value = data.get("value", None)
     if value is None or id is None or not access_factory.get_access("color").verify_qualified_item(value=value):
         return jsonify({"sucess": False, "data": None})
-    access_factory.get_access("color").edit_item(id, value=value)
+    no_accent = unidecode(value)
+    access_factory.get_access("color").edit_item(id, value=value, no_accent=no_accent.lower())
     return jsonify({"sucess": True})
 
 

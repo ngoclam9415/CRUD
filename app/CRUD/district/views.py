@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for, flash
 from database import access_factory
+from unidecode import unidecode
 
 district_blueprint = Blueprint(
     'district', __name__, template_folder='templates')
@@ -18,7 +19,8 @@ def create_district():
     district_name = data.get("district_name", None)
     city_id = data.get("city_id", None)
     if access_factory.get_access("district").verify_qualified_item(name=district_name, city_id=city_id) and district_name != "":
-        access_factory.get_access("district").create_item(name=district_name, city_id=city_id)
+        no_accent = unidecode(district_name)
+        access_factory.get_access("district").create_item(name=district_name, city_id=city_id, no_accent=no_accent.lower())
     else:
         flash("INPUT DISTRICT INVALID", "error")
         return redirect(url_for("district.district"))
@@ -33,7 +35,8 @@ def edit_district():
     city_id = data.get("city_id", None)
     if district_name is None or city_id is None or district_id is None or not access_factory.get_access("district").verify_qualified_item(name=district_name, city_id=city_id):
         return jsonify({"success": False, "data": None})
-    access_factory.get_access("district").edit_item(district_id, name=district_name, city_id=city_id)
+    no_accent = unidecode(district_name)
+    access_factory.get_access("district").edit_item(district_id, name=district_name, city_id=city_id, no_accent=no_accent.lower())
     return jsonify({"success": True})
 
 

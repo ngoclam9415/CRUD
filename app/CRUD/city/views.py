@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, make_response, jsonify, redirect, flash
-
+from unidecode import unidecode
 from database import access_factory
 
 city_blueprint = Blueprint('city', __name__, template_folder='templates')
@@ -24,7 +24,8 @@ def create_city(error=None):
     if request.method == 'POST':
         city_name = request.form['cityName']
         if access_factory.get_access("city").verify_qualified_item(name=city_name) and city_name != "":
-            access_factory.get_access("city").create_item(name=city_name)
+            no_accent = unidecode(city_name)
+            access_factory.get_access("city").create_item(name=city_name, no_accent=no_accent.lower())
             return redirect('/city')
         else:
             error = "Your city is error"
@@ -36,7 +37,8 @@ def edit_city():
         city_id = request.form['city_id']
         city_name = request.form['city_name']
         if city_name != "" and access_factory.get_access("city").verify_qualified_item(name=city_name):
-            access_factory.get_access("city").edit_item(city_id, name=city_name)
+            no_accent = unidecode(city_name)
+            access_factory.get_access("city").edit_item(city_id, name=city_name, no_accent=no_accent.lower())
         else:
             flash("CITY INPUT INVALID", "error")
         return redirect('/city')

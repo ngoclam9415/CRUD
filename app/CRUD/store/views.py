@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, current_app, request, jsonify, redirect, url_for, flash
 from database.mysql_access.models import db
 from database import access_factory
+from unidecode import unidecode
 
 store_blueprint = Blueprint(
     'store', __name__, template_folder='templates')
@@ -22,7 +23,8 @@ def api_create():
     if store_name is None or address_id is None or not access_factory.get_access("store").verify_qualified_item(store_name=store_name, address_id=address_id):
         flash("STORE INPUT INVALID", "error")
         return redirect(url_for("store.index"))
-    access_factory.get_access("store").create_item(store_name=store_name, address_id=address_id)
+    no_accent = unidecode(store_name)
+    access_factory.get_access("store").create_item(store_name=store_name, address_id=address_id, no_accent=no_accent.lower())
     return redirect(url_for("store.index"))
 
 
@@ -34,7 +36,8 @@ def api_edit():
     address_id = data.get("address_id", None)
     if name is None or address_id is None or id is None or not access_factory.get_access("store").verify_qualified_item(store_name=name, address_id=address_id):
         return jsonify({"sucess": False, "data": None})
-    access_factory.get_access("store").edit_item(id, store_name=name, address_id=address_id)
+    no_accent = unidecode(name)
+    access_factory.get_access("store").edit_item(id, store_name=name, address_id=address_id, no_accent=no_accent.lower())
     return jsonify({"sucess": True})
 
 
