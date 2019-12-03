@@ -119,6 +119,8 @@ class BaseModel(BaseLogicModel):
     
 
     def create_search_item(self, **kwargs):
+        length = len(list(kwargs.keys()))
+        kwargs["len"] = length
         flag = self.search_collection.find_and_modify(
                 query=kwargs,
                 update=kwargs,
@@ -141,8 +143,11 @@ class BaseModel(BaseLogicModel):
                 if old_value is not None and old_value != value and key not in ["_id", "id", "type"]:
                     update_fields[key] = value
                     old_fields[key] = old_value
-            self.search_collection.update_many(old_fields,
-                                                {"$set" : update_fields})
+            if "len" in flag.keys():
+                old_fields["len"] = {"$gt" : flag["len"]}
+            if update_fields:
+                self.search_collection.update_many(old_fields,
+                                                    {"$set" : update_fields})
         return flag
 
 class ModelSelector:

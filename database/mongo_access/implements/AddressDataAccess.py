@@ -30,18 +30,39 @@ class AddressDataAccess(BaseDataAccess):
         self.model.edit_search_item(**data)
 
     def create_search_data(self, result):
-        this_district = self.model.redis_accessor.load(result["district_id"])
-        this_city = self.model.redis_accessor.load(this_district["city_id"])
+        this_district = self.get_this_district(result)
+        this_city = self.get_this_city(this_district)
         return {"address_detail" : result["detail"], "district_name" : this_district["name"], "city_name" : this_city["name"], "id" : str(result["_id"]), "type" : "address"}
 
     def create_sqlalchemy_format(self, addresses):
         for address in addresses:
-            this_district = self.model.redis_accessor.load(address["district_id"])
+            this_district = self.get_this_district(address)
             address["district_id"] = this_district["id"]
             address["district"] = this_district["name"]
-            address["city_id"] = self.model.redis_accessor.load(this_district["city_id"])["id"]
-            address["city"] = self.model.redis_accessor.load(this_district["city_id"])["name"]
+            this_city = self.get_this_city(this_district)
+            address["city_id"] = this_city["id"]
+            address["city"] = this_city["name"]
         return json.loads(json.dumps(addresses))
+
+    def get_this_district(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.district_model.collection.name,
+                                        "mysql_id" : int(result["district_id"])})
+            mongo_district_id = cursor["mongo_id"]
+            this_district = self.model.redis_accessor.load(mongo_district_id)
+        else:
+            this_district = self.model.redis_accessor.load(result["district_id"])
+        return this_district
+
+    def get_this_city(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.city_model.collection.name,
+                                        "mysql_id" : int(result["city_id"])})
+            mongo_city_id = cursor["mongo_id"]
+            this_city = self.model.redis_accessor.load(mongo_city_id)
+        else:
+            this_city = self.model.redis_accessor.load(result["city_id"])
+        return this_city
 
     def get_cities(self):
         return self.city_model.list
