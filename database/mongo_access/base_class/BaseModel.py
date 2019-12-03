@@ -33,6 +33,7 @@ class BaseModel(BaseLogicModel):
                 update=kwargs,
                 upsert=True, new=True
         )
+        print("BASE MODEL FLAG : ",flag)
         return flag
 
     def edit_search_item(self, id, **kwargs):
@@ -53,6 +54,7 @@ class BaseModel(BaseLogicModel):
             if "len" in flag.keys():
                 old_fields["len"] = {"$gt" : flag["len"]}
             if update_fields:
-                self.search_collection.update_many(old_fields,
-                                                    {"$set" : update_fields})
+                self.search_collection.update_many(
+                                old_fields,
+                                {"$set" : update_fields})
         return flag

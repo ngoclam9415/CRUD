@@ -26,14 +26,14 @@ class ProductVariantDataAccess(BaseDataAccess):
 
     def create_sqlalchemy_format(self, variants):
         for variant in variants:
-            this_product = self.model.redis_accessor.load(variant["product_id"])
-            this_category = self.model.redis_accessor.load(this_product["category_id"])
-            this_brand = self.model.redis_accessor.load(this_category["brand_id"])
-            this_store = self.model.redis_accessor.load(variant["store_id"])
-            this_address = self.model.redis_accessor.load(this_store["address_id"])
-            this_district = self.model.redis_accessor.load(this_address["district_id"])
-            this_city = self.model.redis_accessor.load(this_district["city_id"])
-            this_color = self.model.redis_accessor.load(variant["color_id"])
+            this_product = self.get_this_product(variant)
+            this_category = self.get_this_category(this_product)
+            this_brand = self.get_this_brand(this_category)
+            this_store = self.get_this_store(variant)
+            this_address = self.get_this_address(this_store)
+            this_district = self.get_this_district(this_address)
+            this_city = self.get_this_city(this_district)
+            this_color = self.get_this_color(variant)
             this_product["category"] = this_category
             this_category["brand"] = this_brand
             this_store["address"] = this_address
@@ -46,17 +46,17 @@ class ProductVariantDataAccess(BaseDataAccess):
 
     def get_products(self):
         for product in self.product_model.list:
-            this_category = self.model.redis_accessor.load(product["category_id"])
-            this_category["brand"] = self.model.redis_accessor.load(this_category["brand_id"])
+            this_category = self.get_this_category(product)
+            this_category["brand"] = self.get_this_brand(this_category)
             product["category"] = this_category
         return json.loads(json.dumps(self.product_model.list))
 
 
     def get_stores(self):
         for store in self.store_model.list:
-            this_address = self.model.redis_accessor.load(store["address_id"])
-            this_district = self.model.redis_accessor.load(this_address["district_id"])
-            this_city = self.model.redis_accessor.load(this_district["city_id"])
+            this_address = self.get_this_address(store)
+            this_district = self.get_this_district(this_address)
+            this_city = self.get_this_city(this_district)
             this_address["district"] = this_district
             this_district["city"] = this_city
             store["address"] = this_address
@@ -76,16 +76,99 @@ class ProductVariantDataAccess(BaseDataAccess):
         self.model.edit_search_item(**data)
 
     def create_search_data(self, result):
-        this_product = self.model.redis_accessor.load(result["product_id"])
-        this_category = self.model.redis_accessor.load(this_product["category_id"])
-        this_brand = self.model.redis_accessor.load(this_category["brand_id"])
-        this_store = self.model.redis_accessor.load(result["store_id"])
-        this_address = self.model.redis_accessor.load(this_store["address_id"])
-        this_district = self.model.redis_accessor.load(this_address["district_id"])
-        this_city = self.model.redis_accessor.load(this_district["city_id"])
-        this_color = self.model.redis_accessor.load(result["color_id"])
+        this_product = self.get_this_product(result)
+        this_category = self.get_this_category(this_product)
+        this_brand = self.get_this_brand(this_category)
+        this_store = self.get_this_store(result)
+        this_address = self.get_this_address(this_store)
+        this_district = self.get_this_district(this_address)
+        this_city = self.get_this_city(this_district)
+        this_color = self.get_this_color(result)
         return {"variant_price" : result["price"], "product_name" : this_product["name"], 
                 "category_name" : this_category["name"], "brand_name" : this_brand["name"],
                 "store_name" : this_store["store_name"], "address_detail" : this_address["detail"],
                 "city_name" : this_city["name"], "color_value" : this_color["value"], "district_name" : this_district["name"],
                 "id" : str(result["_id"]), "type" : "variant"}
+
+
+    def get_this_city(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.city_model.collection.name,
+                                        "mysql_id" : int(result["city_id"])})
+            mongo_city_id = cursor["mongo_id"]
+            this_city = self.model.redis_accessor.load(mongo_city_id)
+        else:
+            this_city = self.model.redis_accessor.load(result["city_id"])
+        return this_city
+
+    def get_this_district(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.district_model.collection.name,
+                                        "mysql_id" : int(result["district_id"])})
+            mongo_district_id = cursor["mongo_id"]
+            this_district = self.model.redis_accessor.load(mongo_district_id)
+        else:
+            this_district = self.model.redis_accessor.load(result["district_id"])
+        return this_district
+
+    def get_this_address(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.address_model.collection.name,
+                                        "mysql_id" : int(result["address_id"])})
+            mongo_address_id = cursor["mongo_id"]
+            this_address = self.model.redis_accessor.load(mongo_address_id)
+        else:
+            this_address = self.model.redis_accessor.load(result["address_id"])
+        return this_address
+
+    def get_this_store(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.store_model.collection.name,
+                                        "mysql_id" : int(result["store_id"])})
+            mongo_store_id = cursor["mongo_id"]
+            this_store = self.model.redis_accessor.load(mongo_store_id)
+        else:
+            this_store = self.model.redis_accessor.load(result["store_id"])
+        return this_store
+
+    def get_this_brand(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.brand_model.collection.name,
+                                        "mysql_id" : int(result["brand_id"])})
+            mongo_brand_id = cursor["mongo_id"]
+            this_brand = self.model.redis_accessor.load(mongo_brand_id)
+        else:
+            this_brand = self.model.redis_accessor.load(result["brand_id"])
+        return this_brand
+
+    def get_this_category(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.category_model.collection.name,
+                                        "mysql_id" : int(result["category_id"])})
+            mongo_category_id = cursor["mongo_id"]
+            this_category = self.model.redis_accessor.load(mongo_category_id)
+        else:
+            this_category = self.model.redis_accessor.load(result["category_id"])
+        return this_category
+
+    def get_this_product(self, result):
+        if "mysql_id" in result.keys():
+            print({"col_type" : self.product_model.collection.name,
+                                        "mysql_id" : int(result["product_id"])})
+            cursor = self.model.sync_col.find_one({"col_type" : self.product_model.collection.name,
+                                        "mysql_id" : int(result["product_id"])})
+            mongo_product_id = cursor["mongo_id"]
+            this_product = self.model.redis_accessor.load(mongo_product_id)
+        else:
+            this_product = self.model.redis_accessor.load(result["product_id"])
+        return this_product
+
+    def get_this_color(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.color_model.collection.name,
+                                        "mysql_id" : int(result["color_id"])})
+            mongo_color_id = cursor["mongo_id"]
+            this_color = self.model.redis_accessor.load(mongo_color_id)
+        else:
+            this_color = self.model.redis_accessor.load(result["color_id"])
+        return this_color

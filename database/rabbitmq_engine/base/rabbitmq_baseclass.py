@@ -2,8 +2,9 @@ import pika
 
 class RabbitMQBaseClass:
     def __init__(self, ip="localhost", port=5673):
-        params = pika.ConnectionParameters(host=ip)
-        params.socket_timeout = 5
+        params = pika.ConnectionParameters(host=ip, heartbeat=600,
+                                       blocked_connection_timeout=300)
+        # params.socket_timeout = 5
         self.connection = pika.BlockingConnection(params)
         self.channel = self.connection.channel()
 

@@ -34,13 +34,15 @@ class BaseLogicModel:
 
         if not self.redis_accessor.exist(str(flag["_id"])):
             kwargs["id"] = str(flag["_id"])
-            self.redis_accessor.save(kwargs["id"], kwargs)
+            if self.redis_accessor is not None:
+                self.redis_accessor.save(kwargs["id"], kwargs)
             self.list.append(kwargs)
             self.list_id.append(str(flag["_id"]))
         else:
             print("Duplicate key in redis")
             kwargs["id"] = str(flag["_id"])
-            self.redis_accessor.save(kwargs["id"], kwargs)
+            if self.redis_accessor is not None:
+                self.redis_accessor.save(kwargs["id"], kwargs)
             self.list.append(kwargs)
             self.list_id.append(str(flag["_id"]))
         return flag
@@ -50,11 +52,12 @@ class BaseLogicModel:
             query = {"col_type" : self.collection.name,
                             "mongo_id" : mongo_id,
                             "mysql_id" : kwargs.get("mysql_id", None)}
-            self.sync_col.find_and_modify(
+            data = self.sync_col.find_and_modify(
                     query=query,
                     update=query,
                     upsert=True, new=True
             )
+            print("data : ",data)
             return True
         return False
 
@@ -70,7 +73,8 @@ class BaseLogicModel:
             object_id = ObjectId(id)
             flag = self.collection.find_one_and_update({"_id" : object_id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
         if flag is not None:
-            self.redis_accessor.modify(str(flag["_id"]), **kwargs)
+            if self.redis_accessor is not None:
+                self.redis_accessor.modify(str(flag["_id"]), **kwargs)
             print(self.list_id)
             index = self.list_id.index(str(flag["_id"]))
             self.list[index].update(**kwargs)
@@ -83,7 +87,8 @@ class BaseLogicModel:
             item["id"] = str(item["_id"])
             list_id.append(item["id"])
             del item["_id"]
-            self.redis_accessor.save(item["id"], item)
+            if self.redis_accessor is not None:
+                self.redis_accessor.save(item["id"], item)
             list_item.append(item)
         return list_id, list_item
 

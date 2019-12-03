@@ -15,13 +15,36 @@ class ElasticEngine:
         return search_result
 
     def fuzzy_search_index(self, index, query):
-        search_result = self.searcher.search(index, body={'query': {'multi_match': {'query': query, 'fields': ['*'], "fuzziness" : "AUTO"}}})
+        search_result = self.searcher.search(index, body={"query": 
+            {
+                "multi_match": 
+                    {
+                        "query": query, 
+                        "fields": ["*"], 
+                        "fuzziness" : "AUTO"
+                    }
+            }, 
+        # "explain" : True,
+        "highlight": 
+            {
+                "fields" : 
+                    {
+                    "no_accent" : {}
+                    }
+            }
+        })
         return search_result
 
     def suggestion_search_index(self, index, query):
         body = {
                     "query": {
                         "bool" : {"should" : []}
+                    },
+                    "explain" : True,
+                    "highlight": {
+                            "fields" : {
+                                "no_accent" : {}
+                            }
                     }
                 }
         for i in ["name", "store_name", "price", "value", "detail"]:
