@@ -4,12 +4,13 @@ from bson.objectid import ObjectId
 import math
 from database.redis_access.redis_accessor import RedisAccessor
 import redis
+import os
 
 
 class BaseLogicModel:
     def __init__(self, collection="City", redis_accessor=None):
         self.mongodb = pymongo.MongoClient(host=config.IP, port=config.PORT)
-        self.db = self.mongodb["product_test"]
+        self.db = self.mongodb[os.getenv("TEST_DB") or "product"]
         self.collection = self.add_collection(collection)
         self.redis_accessor = redis_accessor
         self.list_id, self.list = self.get_attributes()
@@ -57,25 +58,19 @@ class BaseLogicModel:
                     update=query,
                     upsert=True, new=True
             )
-            print("data : ",data)
             return True
         return False
 
     def edit_item(self, id, **kwargs):
         if id == None:
-            print("id : ",id)
             mysql_id = kwargs.get("mysql_id")
-            print("mysql_id : ",mysql_id)
-            print("kwargs : ",kwargs)
             flag = self.collection.find_one_and_update({"mysql_id" : int(mysql_id)}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
-            print(flag)
         else:
             object_id = ObjectId(id)
             flag = self.collection.find_one_and_update({"_id" : object_id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
         if flag is not None:
             if self.redis_accessor is not None:
                 self.redis_accessor.modify(str(flag["_id"]), **kwargs)
-            print(self.list_id)
             index = self.list_id.index(str(flag["_id"]))
             self.list[index].update(**kwargs)
         return flag

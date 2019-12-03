@@ -46,7 +46,7 @@ class AddressDataAccess(BaseDataAccess):
 
     def get_this_district(self, result):
         if "mysql_id" in result.keys():
-            cursor = self.model.sync_col.find_one({"col_type" : self.district_model.collection.name,
+            cursor = self.model.sync_col.find_one({"col_type" :         self.district_model.collection.name,
                                         "mysql_id" : int(result["district_id"])})
             mongo_district_id = cursor["mongo_id"]
             this_district = self.model.redis_accessor.load(mongo_district_id)

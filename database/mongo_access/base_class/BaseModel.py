@@ -33,7 +33,6 @@ class BaseModel(BaseLogicModel):
                 update=kwargs,
                 upsert=True, new=True
         )
-        print("BASE MODEL FLAG : ",flag)
         return flag
 
     def edit_search_item(self, id, **kwargs):

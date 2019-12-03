@@ -79,7 +79,6 @@ class StoreDataAccess(BaseDataAccess):
             cursor = self.model.sync_col.find_one({"col_type" : self.district_model.collection.name,
                                         "mysql_id" : int(result["district_id"])})
             mongo_district_id = cursor["mongo_id"]
-            print("mongo_district_id : ",mongo_district_id)
             this_district = self.model.redis_accessor.load(mongo_district_id)
         else:
             this_district = self.model.redis_accessor.load(result["district_id"])

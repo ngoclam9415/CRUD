@@ -19,7 +19,6 @@ class SyncDBWorker(RabbitMQBaseClass):
         elif data["action"] == "edit":
             self.sync_edited_data(data)
         ch.basic_ack(delivery_tag = method.delivery_tag)
-        print("Finish")
 
     def sync_created_item(self, data):
         data["data"]["mysql_id"] = data["mysql_id"]

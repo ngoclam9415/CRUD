@@ -153,8 +153,6 @@ class ProductVariantDataAccess(BaseDataAccess):
 
     def get_this_product(self, result):
         if "mysql_id" in result.keys():
-            print({"col_type" : self.product_model.collection.name,
-                                        "mysql_id" : int(result["product_id"])})
             cursor = self.model.sync_col.find_one({"col_type" : self.product_model.collection.name,
                                         "mysql_id" : int(result["product_id"])})
             mongo_product_id = cursor["mongo_id"]
