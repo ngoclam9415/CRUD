@@ -24,4 +24,5 @@ class CityDataAccess(BaseDataAccess):
         self.model.edit_search_item(**data)
 
     def create_search_data(self, result):
+        print(result)
         return {"city_name" : result["name"], "id" : str(result["_id"]), "type" : "city"}

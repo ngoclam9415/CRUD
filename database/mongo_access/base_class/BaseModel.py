@@ -5,13 +5,10 @@ import math
 from database.redis_access.redis_accessor import RedisAccessor
 import redis
 from database.mongo_access.base_class.BaseLogicModel import BaseLogicModel
-from services.clients.ElasticSynchronizerClient import ElasticSynchronizerClient
-from services.transporter.ClientBrokerTransporter import ClientBrokerTransporter
+
 
 class BaseModel(BaseLogicModel):
     def __init__(self, collection="City", redis_accessor=None, search_collection=None):
-        connection = ClientBrokerTransporter()
-        self.queue_client = ElasticSynchronizerClient(connection)
         super(BaseModel, self).__init__(collection, redis_accessor)
         self.search_collection = search_collection
     
@@ -25,18 +22,18 @@ class BaseModel(BaseLogicModel):
             del item["_id"]
             if self.redis_accessor is not None:
                 self.redis_accessor.save(item["id"], item)
-            self.queue_client.create_item(item)
+            # self.queue_client.create_item(item)
             list_item.append(item)
         return list_id, list_item
 
     def create_search_item(self, **kwargs):
-        # flag = self.search_collection.find_and_modify(
-        #         query=kwargs,
-        #         update=kwargs,
-        #         upsert=True, new=True
-        # )
-        self.queue_client.create_item(kwargs)
-        return None
+        flag = self.search_collection.find_and_modify(
+                query=kwargs,
+                update=kwargs,
+                upsert=True, new=True
+        )
+        # self.queue_client.create_item(kwargs)
+        return flag
 
     def edit_search_item(self, id, **kwargs):
         flag = self.search_collection.find_one_and_update({"id" : id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.BEFORE)

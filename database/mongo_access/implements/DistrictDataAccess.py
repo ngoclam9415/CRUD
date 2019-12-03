@@ -37,5 +37,15 @@ class DistrictDataAccess(BaseDataAccess):
         self.model.edit_search_item(**data)
 
     def create_search_data(self, result):
-        this_city = self.model.redis_accessor.load(result["city_id"])
+        this_city = self.get_this_city(result)
         return {"district_name" : result["name"], "city_name" : this_city["name"], "id" : str(result["_id"]), "type" : "district"}
+
+    def get_this_city(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.city_model.collection.name,
+                                        "mysql_id" : int(result["city_id"])})
+            mongo_city_id = cursor["mongo_id"]
+            this_city = self.model.redis_accessor.load(mongo_city_id)
+        else:
+            this_city = self.model.redis_accessor.load(result["city_id"])
+        return this_city

@@ -9,10 +9,11 @@ import redis
 class BaseLogicModel:
     def __init__(self, collection="City", redis_accessor=None):
         self.mongodb = pymongo.MongoClient(host=config.IP, port=config.PORT)
-        self.db = self.mongodb["product"]
+        self.db = self.mongodb["product_test"]
         self.collection = self.add_collection(collection)
         self.redis_accessor = redis_accessor
         self.list_id, self.list = self.get_attributes()
+        self.sync_col = self.add_collection("Sync")
 
     def get_attributes(self):
         cursors = self.collection.find({})
@@ -28,18 +29,44 @@ class BaseLogicModel:
                 update=kwargs,
                 upsert=True, new=True
         )
+
+        self.process_sync_type(str(flag["_id"]), **kwargs)
+
         if not self.redis_accessor.exist(str(flag["_id"])):
             kwargs["id"] = str(flag["_id"])
             self.redis_accessor.save(kwargs["id"], kwargs)
             self.list.append(kwargs)
+            self.list_id.append(str(flag["_id"]))
         return flag
 
+    def process_sync_type(self, mongo_id, **kwargs):
+        if ("mysql_id" in kwargs.keys()):
+            query = {"col_type" : self.collection.name,
+                            "mongo_id" : mongo_id,
+                            "mysql_id" : kwargs.get("mysql_id", None)}
+            self.sync_col.find_and_modify(
+                    query=query,
+                    update=query,
+                    upsert=True, new=True
+            )
+            return True
+        return False
+
     def edit_item(self, id, **kwargs):
-        object_id = ObjectId(id)
-        flag = self.collection.find_one_and_update({"_id" : object_id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
+        if id == None:
+            print("id : ",id)
+            mysql_id = kwargs.get("mysql_id")
+            print("mysql_id : ",mysql_id)
+            print("kwargs : ",kwargs)
+            flag = self.collection.find_one_and_update({"mysql_id" : int(mysql_id)}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
+            print(flag)
+        else:
+            object_id = ObjectId(id)
+            flag = self.collection.find_one_and_update({"_id" : object_id}, {"$set" : kwargs}, return_document=pymongo.ReturnDocument.AFTER)
         if flag is not None:
-            self.redis_accessor.modify(id, **kwargs)
-            index = self.list_id.index(id)
+            self.redis_accessor.modify(str(flag["_id"]), **kwargs)
+            print(self.list_id)
+            index = self.list_id.index(str(flag["_id"]))
             self.list[index].update(**kwargs)
         return flag
 
