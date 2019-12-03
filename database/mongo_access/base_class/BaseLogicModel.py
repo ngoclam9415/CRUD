@@ -10,7 +10,7 @@ import os
 class BaseLogicModel:
     def __init__(self, collection="City", redis_accessor=None):
         self.mongodb = pymongo.MongoClient(host=config.IP, port=config.PORT)
-        self.db = self.mongodb[os.getenv("TEST_DB") or "product"]
+        self.db = self.mongodb[os.getenv("TEST_DB") or "product_test"]
         self.collection = self.add_collection(collection)
         self.redis_accessor = redis_accessor
         self.list_id, self.list = self.get_attributes()

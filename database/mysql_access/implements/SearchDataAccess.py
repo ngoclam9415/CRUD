@@ -40,8 +40,9 @@ class SearchDataAccess(ElasticEngine):
 
     def suggest_item(self, text):
         results = super(SearchDataAccess, self).suggestion_search_index("_all", text)
-        return_dict = {}
+        return_list = []
         for result in results["hits"]["hits"]:
-            return_dict.setdefault(result["_index"], [])
-            return_dict[result["_index"]].append(result["_source"])
-        return return_dict
+            for key, val in result["_source"].items():
+                if key in ["name", "store_name", "price", "detail", "value"]:
+                    return_list.append(val)
+        return return_list

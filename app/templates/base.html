@@ -16,6 +16,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/extras.1.1.0.min.css') }}">
     <link rel="stylesheet" id="main-stylesheet" data-version="1.1.0"
     href="{{ url_for('static', filename='styles/shards-dashboards.1.1.0.min.css') }}">
+    <link rel="stylesheet" id="main-stylesheet" data-version="1.1.0"
+    href="{{ url_for('static', filename='easy-autocomplete.min.css') }}">
+    <link rel="stylesheet" id="main-stylesheet" data-version="1.1.0"
+    href="{{ url_for('static', filename='easy-autocomplete.themes.min.css') }}">
     <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -133,7 +137,7 @@
                         </li>
                     </ul>
                     <form class="form-inline my-2 my-lg-0" action={{ url_for("search.index") }} method="GET">
-                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="search" name="search">
+                        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="search" name="search"  autocomplete="off">
                         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
                     </form>
                     <nav class="nav">
@@ -170,6 +174,7 @@
     <script src="{{ url_for('static', filename='scripts/extras.1.1.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/shards-dashboards.1.1.0.min.js') }}"></script>
     <script src="{{ url_for('static', filename='scripts/image-resize.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery.easy-autocomplete.min.js') }}"></script>
     <script src="{{ url_for('static', filename='handle_edit_form.js') }}"></script>
     {% block addition %}
     {% endblock %}

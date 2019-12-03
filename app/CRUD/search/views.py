@@ -13,6 +13,7 @@ def index():
     if search_info != "" and search_info is not None:
         search_info = unidecode(search_info).lower()
         data = access_factory.get_access("search").show_searched_item(search_info)
+        print(data)
     return render_template("CRUD/search/search.html", 
                     cities=data.get("city", []),
                     districts=data.get("district", []),
@@ -23,4 +24,19 @@ def index():
                     categories=data.get("category", []),
                     products=data.get("product", []),
                     variants=data.get("variant", []))
+
+@search_blueprint.route('/suggestion', methods=['POST', 'GET'])
+def suggest():
+    if request.method == "POST" :
+        data = request.get_json()
+    else:
+        data = request.values
+        print(data)
+    text = data.get("text")
+    if not hasattr(access_factory.get_access("search"), "suggest_item"):
+        return jsonify({"support_suggest" : False})
+    text = unidecode(text).lower()
+    results = access_factory.get_access("search").suggest_item(text)
+    print(results)
+    return jsonify({"support_suggest" : True, "results" : results})
     

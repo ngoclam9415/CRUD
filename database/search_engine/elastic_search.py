@@ -40,20 +40,20 @@ class ElasticEngine:
                     "query": {
                         "bool" : {"should" : []}
                     },
-                    "explain" : True,
+                    # "explain" : True,
                     "highlight": {
                             "fields" : {
                                 "no_accent" : {}
                             }
                     }
                 }
-        for i in ["name", "store_name", "price", "value", "detail"]:
+        for i in ["name", "store_name", "value", "detail"]:
             body["query"]["bool"]["should"].append({
                                 "match_phrase_prefix" : {
                                     i: {
                                         "query": query,
                                         "slop": 3,
-                                        "max_expansions": 10
+                                        "max_expansions": 50
                                     }
                                 }
                         })
