@@ -19,7 +19,7 @@ class CategoryDataAccess(BaseDataAccess):
 
     def create_sqlalchemy_format(self, categories):
         for category in categories:
-            this_brand = self.model.redis_accessor.load(category["brand_id"])
+            this_brand = self.get_this_brand(category)
             category["brand_name"] = this_brand["name"]
             category["brand_id"] = this_brand["id"]
         return json.loads(json.dumps(categories))
@@ -38,5 +38,15 @@ class CategoryDataAccess(BaseDataAccess):
         self.model.edit_search_item(**data)
 
     def create_search_data(self, result):
-        this_brand = self.model.redis_accessor.load(result["brand_id"])
+        this_brand = self.get_this_brand(result)
         return {"category_name" : result["name"], "brand_name" : this_brand["name"], "id" : str(result["_id"]), "type" : "category"}
+
+    def get_this_brand(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.brand_model.collection.name,
+                                        "mysql_id" : int(result["brand_id"])})
+            mongo_brand_id = cursor["mongo_id"]
+            this_brand = self.model.redis_accessor.load(mongo_brand_id)
+        else:
+            this_brand = self.model.redis_accessor.load(result["brand_id"])
+        return this_brand
