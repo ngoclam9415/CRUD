@@ -6,7 +6,6 @@ from database.redis_access.redis_accessor import RedisAccessor
 import redis
 from database.mongo_access.base_class.BaseLogicModel import BaseLogicModel
 
-
 class BaseModel(BaseLogicModel):
     def __init__(self, collection="City", redis_accessor=None, search_collection=None):
         super(BaseModel, self).__init__(collection, redis_accessor)
@@ -27,12 +26,13 @@ class BaseModel(BaseLogicModel):
         return list_id, list_item
 
     def create_search_item(self, **kwargs):
+        length = len(list(kwargs.keys()))
+        kwargs["len"] = length
         flag = self.search_collection.find_and_modify(
                 query=kwargs,
                 update=kwargs,
                 upsert=True, new=True
         )
-        # self.queue_client.create_item(kwargs)
         return flag
 
     def edit_search_item(self, id, **kwargs):
@@ -50,6 +50,9 @@ class BaseModel(BaseLogicModel):
                 if old_value is not None and old_value != value and key not in ["_id", "id", "type"]:
                     update_fields[key] = value
                     old_fields[key] = old_value
-            self.search_collection.update_many(old_fields,
-                                                {"$set" : update_fields})
+            if "len" in flag.keys():
+                old_fields["len"] = {"$gt" : flag["len"]}
+            if update_fields:
+                self.search_collection.update_many(old_fields,
+                                                    {"$set" : update_fields})
         return flag

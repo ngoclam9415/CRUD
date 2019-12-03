@@ -19,14 +19,14 @@ class ProductDataAccess(BaseDataAccess):
 
     def create_sqlalchemy_format(self, products):
         for product in products:
-            this_category = self.model.redis_accessor.load(product["category_id"])
-            this_category["brand"] = self.model.redis_accessor.load(this_category["brand_id"])
+            this_category = self.get_this_category(product)
+            this_category["brand"] = self.get_this_brand(this_category)
             product["category"] = this_category
         return json.loads(json.dumps(products))
 
     def get_categories(self):
         for category in self.category_model.list:
-            category["brand"] = self.model.redis_accessor.load(category["brand_id"])
+            category["brand"] = self.get_this_brand(category)
         return json.loads(json.dumps(self.category_model.list))
     
     def create_item(self, **kwargs):
@@ -40,6 +40,26 @@ class ProductDataAccess(BaseDataAccess):
         self.model.edit_search_item(**data)
 
     def create_search_data(self, result):
-        this_category = self.model.redis_accessor.load(result["category_id"])
-        this_brand = self.model.redis_accessor.load(this_category["brand_id"])
+        this_category = self.get_this_category(result)
+        this_brand = self.get_this_brand(this_category)
         return {"product_name" : result["name"], "category_name" : this_category["name"], "brand_name" : this_brand["name"], "id" : str(result["_id"]), "type" : "product"}
+
+    def get_this_category(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.category_model.collection.name,
+                                        "mysql_id" : int(result["category_id"])})
+            mongo_category_id = cursor["mongo_id"]
+            this_category = self.model.redis_accessor.load(mongo_category_id)
+        else:
+            this_category = self.model.redis_accessor.load(result["category_id"])
+        return this_category
+
+    def get_this_brand(self, result):
+        if "mysql_id" in result.keys():
+            cursor = self.model.sync_col.find_one({"col_type" : self.brand_model.collection.name,
+                                        "mysql_id" : int(result["brand_id"])})
+            mongo_brand_id = cursor["mongo_id"]
+            this_brand = self.model.redis_accessor.load(mongo_brand_id)
+        else:
+            this_brand = self.model.redis_accessor.load(result["brand_id"])
+        return this_brand
