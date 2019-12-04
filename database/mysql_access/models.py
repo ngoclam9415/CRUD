@@ -113,10 +113,10 @@ class Product(FullText, db.Model):
         "ProductVariant", backref='product', lazy="dynamic")
 
 
-class ProductVariant(FullText, db.Model):
+class ProductVariant(db.Model):
     __tablename__ = "variant"
     __table_args__ = {'extend_existing': True}
-    __fulltext_columns__ = ("price",)
+    __fulltext_columns__ = None
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     price = db.Column(db.BigInteger)

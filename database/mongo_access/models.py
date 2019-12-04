@@ -20,6 +20,7 @@ class ModelSelector:
         self.store_model = BaseModel("Store", redis_accessor, self.search_model.collection)
         self.product_model = BaseModel("Product", redis_accessor, self.search_model.collection)
         self.product_variant_model = BaseModel("Variant", redis_accessor, self.search_model.collection)
+        self.redis_accessor = redis_accessor
 
     def select(self, model_type):
         if model_type == "City":
@@ -45,6 +46,22 @@ class ModelSelector:
             
     def init_app(self, app):
         print("HELLO APP")
+
+    def drop_all(self):
+        self.search_model.db.drop_collection("City")
+        self.search_model.db.drop_collection("District")
+        self.search_model.db.drop_collection("Address")
+        self.search_model.db.drop_collection("Store")
+        self.search_model.db.drop_collection("Brand")
+        self.search_model.db.drop_collection("Category")
+        self.search_model.db.drop_collection("Product")
+        self.search_model.db.drop_collection("Color")
+        self.search_model.db.drop_collection("Variant")
+        self.search_model.db.drop_collection("Search")
+        self.search_model.db.drop_collection("Sync")
+
+    def create_all(self):
+        self.__init__(self.redis_accessor)
 
 redis_accessor = RedisAccessor(redis.Redis())
 db = ModelSelector(redis_accessor)

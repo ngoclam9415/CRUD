@@ -11,4 +11,10 @@ except:
     pass
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    from wsgiref import simple_server
+    from wsgiref.simple_server import WSGIRequestHandler
+    server = simple_server.WSGIServer(("", 5000), WSGIRequestHandler)
+    server.set_app(app)
+    server.serve_forever()
+    # app.run(debug=True)
+
