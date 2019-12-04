@@ -59,11 +59,11 @@ def after_feature(context, feature):
 
 
 def after_all(context):
-    context.mysql_db.drop_all()
-    context.mysql_db.create_all()
-    context.mongo_db.drop_all()
-    context.mongo_db.create_all()
-    context.redis.flushdb()
+    # context.mysql_db.drop_all()
+    # context.mysql_db.create_all()
+    # context.mongo_db.drop_all()
+    # context.mongo_db.create_all()
+    # context.redis.flushdb()
     print("Executing after all")
     context.browser.quit()
     context.server.shutdown()
