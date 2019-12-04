@@ -1,5 +1,12 @@
 from behave import given, when, then
 from unidecode import unidecode
+import time
+
+def send_delayed_keys(element, text, delay=0.1) :
+    for c in text :
+        # endtime = time.time() + delay
+        element.send_keys(c)
+        time.sleep(delay)
 
 @given(u'Open {content_type} page')
 def open_city_page(context, content_type):
@@ -37,11 +44,26 @@ def do_nothing(context):
 @when(u'Search with {keyword}')
 def input_search_city(context, keyword):
     search_input = context.browser.find_element_by_id("search")
-    search_input.send_keys(keyword)
+    send_delayed_keys(search_input, keyword)
+    # search_input.send_keys(keyword)
     search_button = context.browser.find_element_by_css_selector(".btn.btn-outline-success.my-2.my-sm-0")
     search_button.click()
 
 @then(u'Check if {city} listed in search results')
 def check_existed_city_in_search(context, city):
+    bodyText = context.browser.find_element_by_tag_name("body")
+    assert city in bodyText.text
+
+@when(u'Edit {city} with {new_city}')
+def edit_city(context, city, new_city):
+    context.browser.find_element_by_xpath('//*[@id="body-city"]/tr[contains(., "{}")]/td[3]'.format(city)).click()
+    city_name = context.browser.find_element_by_name('city_name')
+    city_name.clear()
+    send_delayed_keys(city_name, new_city)
+    context.browser.find_element_by_id('modify').click()
+
+
+@then(u'Check if {city} is listed in current page')
+def check_listed_modify_city(context, city):
     bodyText = context.browser.find_element_by_tag_name("body")
     assert city in bodyText.text

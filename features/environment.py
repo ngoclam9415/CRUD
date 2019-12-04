@@ -7,7 +7,7 @@ import threading
 from wsgiref import simple_server
 from wsgiref.simple_server import WSGIRequestHandler
 from elasticsearch import Elasticsearch
-
+from redis import Redis
 
 def before_all(context):
     print("Executing before all")
@@ -26,6 +26,8 @@ def before_all(context):
     context.server.set_app(context.app)
     context.pa_app = threading.Thread(target=context.server.serve_forever)
     context.pa_app.start()
+    context.redis = Redis()
+    context.redis.flushdb()
     print("HERE")
     context.url = "http://localhost:5000"
     context.client = context.app.test_client(use_cookies=True)
@@ -39,6 +41,7 @@ def before_feature(context, feature):
     context.mysql_db.create_all()
     context.mongo_db.drop_all()
     context.mongo_db.create_all()
+    context.redis.flushdb()
     print("Before feature\n")
 
 
