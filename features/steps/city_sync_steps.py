@@ -26,6 +26,7 @@ def create_new_city(context, city):
 def check_listed_city(context, city):
     last_button = context.browser.find_element_by_css_selector(".page-item.last")
     last_button.click()
+    time.sleep(0.5)
     rows = context.browser.find_elements_by_tag_name("tr")
     last_row = rows[len(rows) - 1]
     ciy_field_text = last_row.find_elements_by_tag_name("td")[1].text
